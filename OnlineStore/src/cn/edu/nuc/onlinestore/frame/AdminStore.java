@@ -19,6 +19,8 @@ import cn.edu.nuc.onlinestore.model.Admin;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class AdminStore extends JFrame {
 
@@ -27,7 +29,7 @@ public class AdminStore extends JFrame {
 	 */
 	private static final long serialVersionUID = -6143120919875553327L;
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField goodsid;
 	private JFrame perviousFrame;
 	private Admin admin;
 	
@@ -46,9 +48,9 @@ public class AdminStore extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel panel = new JPanel();
-		panel.setBounds(10, 78, 696, 341);
-		panel.setLayout(new GridLayout(1, 1, 0, 0));
+		JPanel content = new JPanel();
+		content.setBounds(10, 78, 696, 341);
+		content.setLayout(new GridLayout(1, 1, 0, 0));
 		
 		DefaultTableModel model = new DefaultTableModel();
 		model.addColumn("商品编号");
@@ -70,61 +72,67 @@ public class AdminStore extends JFrame {
 		
 		JScrollPane pane = new JScrollPane( table );
 		
-		panel.add(pane);
-		contentPane.add(panel);
+		content.add(pane);
+		contentPane.add(content);
 		
-		JButton button = new JButton("添加商品");
-		button.addActionListener(new ActionListener() {
+		JButton addGoodsButton = new JButton("添加商品");
+		addGoodsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AdminAdd add = new AdminAdd();
 				add.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 				add.setVisible(true);
 			}
 		});
-		button.setBounds(386, 45, 93, 23);
-		contentPane.add(button);
+		addGoodsButton.setBounds(386, 45, 93, 23);
+		contentPane.add(addGoodsButton);
 		
-		JButton button_1 = new JButton("修改商品");
-		button_1.addActionListener(new ActionListener() {
+		JButton modifyGoodsButton = new JButton("修改商品");
+		modifyGoodsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AdminUpdate u = new AdminUpdate();
 				u.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 				u.setVisible(true);
 			}
 		});
-		button_1.setBounds(489, 45, 93, 23);
-		contentPane.add(button_1);
+		modifyGoodsButton.setBounds(489, 45, 93, 23);
+		contentPane.add(modifyGoodsButton);
 		
-		JButton button_2 = new JButton("删除选中商品");
-		button_2.addActionListener(new ActionListener() {
+		JButton deleteGoodsButton = new JButton("删除选中商品");
+		deleteGoodsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//得到当前选中商品项
 				JOptionPane.showConfirmDialog(null, "确定要删除\"水杯\"么?" );
 			}
 		});
-		button_2.setBounds(587, 45, 119, 23);
-		contentPane.add(button_2);
+		deleteGoodsButton.setBounds(587, 45, 119, 23);
+		contentPane.add(deleteGoodsButton);
 		
-		JButton button_3 = new JButton("退出登录");
-		button_3.setBounds(613, 6, 93, 23);
-		contentPane.add(button_3);
+		JButton exitButton = new JButton("退出登录");
+		exitButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+			}
+		});
+		exitButton.setBounds(613, 6, 93, 23);
+		contentPane.add(exitButton);
 		
-		JLabel label = new JLabel("当前在线用户数: 5");
-		label.setBounds(10, 10, 162, 15);
-		contentPane.add(label);
+		JLabel onlineUserCount = new JLabel("当前在线用户数: 0");
+		onlineUserCount.setBounds(10, 10, 162, 15);
+		contentPane.add(onlineUserCount);
 		
-		JLabel lblid = new JLabel("商品编号:");
-		lblid.setBounds(10, 53, 54, 15);
-		contentPane.add(lblid);
+		JLabel goodsIdLabel = new JLabel("商品编号:");
+		goodsIdLabel.setBounds(10, 53, 54, 15);
+		contentPane.add(goodsIdLabel);
 		
-		textField = new JTextField();
-		textField.setBounds(68, 50, 104, 21);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		goodsid = new JTextField();
+		goodsid.setBounds(68, 50, 104, 21);
+		contentPane.add(goodsid);
+		goodsid.setColumns(10);
 		
-		JButton button_4 = new JButton("搜索");
-		button_4.setBounds(180, 49, 93, 23);
-		contentPane.add(button_4);
+		JButton searchButton = new JButton("搜索");
+		searchButton.setBounds(180, 49, 93, 23);
+		contentPane.add(searchButton);
 	}
 
 }
