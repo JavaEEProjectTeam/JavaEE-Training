@@ -1,23 +1,31 @@
 package cn.edu.nuc.onlinestore.model;
 
+import java.io.Serializable;
+
 /**
  * 用户类
+ * 
  * @author 王凯
  *
  */
-public class User {
-	
-	private String userid;
-	
+public class User implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5369120269129538610L;
+
+	private int userid;
+
 	private String username;
-	
+
 	private String password;
 
-	public String getUserid() {
+	public int getUserid() {
 		return userid;
 	}
 
-	public void setUserid(String userid) {
+	public void setUserid(int userid) {
 		this.userid = userid;
 	}
 
@@ -41,7 +49,7 @@ public class User {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((userid == null) ? 0 : userid.hashCode());
+		result = prime * result + userid;
 		return result;
 	}
 
@@ -54,10 +62,7 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (userid == null) {
-			if (other.userid != null)
-				return false;
-		} else if (!userid.equals(other.userid))
+		if (userid != other.userid)
 			return false;
 		return true;
 	}
@@ -67,6 +72,5 @@ public class User {
 		return "User [userid=" + userid + ", username=" + username
 				+ ", password=" + password + "]";
 	}
-	
-	
+
 }

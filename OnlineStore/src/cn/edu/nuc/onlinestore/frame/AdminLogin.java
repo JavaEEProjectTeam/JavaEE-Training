@@ -1,39 +1,34 @@
 package cn.edu.nuc.onlinestore.frame;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+
+import cn.edu.nuc.onlinestore.model.Admin;
+import cn.edu.nuc.onlinestore.service.LoginRegisterService;
+
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class AdminLogin extends JFrame {
-
-	private JPanel contentPane;
-	private JTextField textField;
-	private JPasswordField passwordField;
-
+	
 	/**
-	 * Launch the application.
+	 * 
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AdminLogin frame = new AdminLogin();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private static final long serialVersionUID = 201596698169710930L;
+	private JPanel contentPane;
+	private JTextField adminName;
+	private JPasswordField password;
+	private JFrame thisFrame;
 
 	/**
 	 * Create the frame.
@@ -47,31 +42,54 @@ public class AdminLogin extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		thisFrame = this;
 		
-		JLabel label = new JLabel("用户名:");
-		label.setBounds(151, 245, 54, 15);
-		contentPane.add(label);
+		JLabel adminNameLabel = new JLabel("用户名:");
+		adminNameLabel.setBounds(151, 245, 54, 15);
+		contentPane.add(adminNameLabel);
 		
-		JLabel label_1 = new JLabel("密  码:");
-		label_1.setBounds(151, 276, 54, 15);
-		contentPane.add(label_1);
+		JLabel passwordLabel = new JLabel("密  码:");
+		passwordLabel.setBounds(151, 276, 54, 15);
+		contentPane.add(passwordLabel);
 		
-		textField = new JTextField();
-		textField.setBounds(215, 242, 197, 21);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		adminName = new JTextField();
+		adminName.setBounds(215, 242, 197, 21);
+		contentPane.add(adminName);
+		adminName.setColumns(10);
 		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(215, 273, 197, 21);
-		contentPane.add(passwordField);
+		password = new JPasswordField();
+		password.setBounds(215, 273, 197, 21);
+		contentPane.add(password);
 		
-		JButton button = new JButton("登录系统");
-		button.setBounds(252, 319, 93, 23);
-		contentPane.add(button);
+		JButton loginButton = new JButton("登录系统");
+		loginButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String adminname = adminName.getText();
+				String adpassword = new String(password.getPassword());
+				if (adminname.equals("") || adpassword.equals("")) {
+					JOptionPane.showMessageDialog(null, "用户名、密码不能为空",
+							"警告", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				Admin admin = new Admin();
+				admin.setAdminName(adminname);
+				admin.setPassword(adpassword);
+				if (LoginRegisterService.adminLoginValidate(admin)) {
+					JFrame jf = new AdminStore(thisFrame, admin);
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "登录失败！用户名或密码错误！",
+							"错误", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+		loginButton.setBounds(252, 319, 93, 23);
+		contentPane.add(loginButton);
 		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(AdminLogin.class.getResource("/img/user.png")));
-		lblNewLabel.setBounds(140, 10, 255, 235);
-		contentPane.add(lblNewLabel);
+		JLabel picture = new JLabel("");
+		picture.setIcon(new ImageIcon(AdminLogin.class.getResource("/img/user.png")));
+		picture.setBounds(140, 10, 255, 235);
+		contentPane.add(picture);
 	}
 }

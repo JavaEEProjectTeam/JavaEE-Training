@@ -1,51 +1,44 @@
 package cn.edu.nuc.onlinestore.frame;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+
 import java.awt.GridLayout;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import cn.edu.nuc.onlinestore.model.Admin;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class AdminStore extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6143120919875553327L;
 	private JPanel contentPane;
 	private JTextField textField;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AdminStore frame = new AdminStore();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
-	public AdminStore() {
-		setTitle("中北商场后台管理系统--当前用户:张三");
+	private JFrame perviousFrame;
+	private Admin admin;
+	
+	public AdminStore(JFrame perviousFrame, Admin admin) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(AdminStore.class.getResource("/img/admin_llogin_logo.png")));
+		this.perviousFrame = perviousFrame;
+		this.admin = admin;
+		perviousFrame.setVisible(false);  //隐藏掉登录窗口
+		this.setVisible(true);            //显示本窗口
+		
+		setTitle("中北商场后台管理系统--当前用户:" + admin.getAdminName());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 732, 467);
 		contentPane = new JPanel();
@@ -62,7 +55,6 @@ public class AdminStore extends JFrame {
 		model.addColumn("名称");
 		model.addColumn("单价(人民币)");
 		model.addColumn("库存");
-		//model.addColumn("操作");
 		
 		model.addRow(new String[]{"1","水杯","15.00","200"});
 		model.addRow(new String[]{"2","水瓶","35.00","200"});
@@ -134,4 +126,5 @@ public class AdminStore extends JFrame {
 		button_4.setBounds(180, 49, 93, 23);
 		contentPane.add(button_4);
 	}
+
 }

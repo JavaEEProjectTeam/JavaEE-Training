@@ -1,4 +1,4 @@
-package cn.edu.nuc.onlinestore.util;
+package cn.edu.nuc.onlinestore.io;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.edu.nuc.onlinestore.model.Admin;
 import cn.edu.nuc.onlinestore.model.User;
@@ -90,7 +92,24 @@ public class IOUtility {
 	}
 	
 	/**
+	 * 得到已注册用户的数量
+	 * @return 已注册用户的数量
+	 */
+	public static int getRegisteredUserCount() {
+		return new File(USER_DIRECTORY).listFiles().length;
+	}
+	
+	/**
+	 * 得到已注册管理员的数量
+	 * @return 已注册管理员的数量
+	 */
+	public static int getRegisteredAdminCount() {
+		return new File(ADMIN_DIRECTORY).listFiles().length;
+	}
+	
+	/**
 	 * 将用户信息持久化到文件中
+	 * @param user 用户信息
 	 */
 	public static void writeUserToFile(User user) {
 		String path = USER_DIRECTORY + user.getUserid() + ".dat";
@@ -108,7 +127,7 @@ public class IOUtility {
 	/**
 	 * 根据userid从文件中取得对应的user对象
 	 * @param id 用户id
-	 * @return
+	 * @return User实例
 	 */
 	public static User readUserFromFile(int id){
 		String path = USER_DIRECTORY + id + ".dat";
@@ -131,7 +150,7 @@ public class IOUtility {
 	 * 将管理员信息持久化到文件中
 	 */
 	public static void writeAdminToFile(Admin admin) {
-		String path = USER_DIRECTORY + admin.getAdminid() + ".dat";
+		String path = ADMIN_DIRECTORY + admin.getAdminid() + ".dat";
 		createFile(path);
 		File userfile = new File(path);
 		OutputStream out = null;
@@ -140,6 +159,21 @@ public class IOUtility {
 			persistObject(admin, out);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static List<Admin> getAllAdmin() {
+		List<Admin> list = new ArrayList<Admin>();
+		File[] adminfiles = new File(ADMIN_DIRECTORY).listFiles();
+		try {
+			for (File file : adminfiles) {
+				Admin admin = (Admin)getObject(new FileInputStream(file));
+				list.add(admin);
+			}
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 	
