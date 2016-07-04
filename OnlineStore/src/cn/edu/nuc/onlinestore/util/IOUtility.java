@@ -1,8 +1,16 @@
 package cn.edu.nuc.onlinestore.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
+import cn.edu.nuc.onlinestore.model.Admin;
 import cn.edu.nuc.onlinestore.model.User;
 
 /**
@@ -15,22 +23,22 @@ public class IOUtility {
 	/**
 	 * 应用根目录
 	 */
-	private static final String ROOT_DIRECTORY = "D://store// ";
+	private static final String ROOT_DIRECTORY = "D:" + File.separator + "store" + File.separator;
 	
 	/**
 	 * 商品目录(一件商品存为一个独立文件)
 	 */
-	private static final String GOODS_DIRECTORY = "D://store//goods//";
+	private static final String GOODS_DIRECTORY = ROOT_DIRECTORY + "goods" + File.separator;
 	
 	/**
 	 * 管理员帐号目录(一位管理员对应一独立文件) 
 	 */
-	private static final String ADMIN_DIRECTORY = "D://store//admin//";
+	private static final String ADMIN_DIRECTORY = ROOT_DIRECTORY + "admin" + File.separator;
 	
 	/**
 	 * 客户帐号目录(一位客户对应一独立文件)
 	 */
-	private static final String USER_DIRECTORY = "D://store//user//";
+	private static final String USER_DIRECTORY = ROOT_DIRECTORY + "user" + File.separator;
 	
 	/**
 	 * 检测并创建所有工作目录
@@ -55,23 +63,23 @@ public class IOUtility {
 	}
 	
 	/**
-	 * 判断用户目录是否存在
+	 * 判断文件或目录是否存在
 	 */
-	public static boolean isUserFileExists(User user) {
-		File userfile = new File(USER_DIRECTORY + user.getUserid() + ".dat");
-		if (userfile.exists()) {
+	private static boolean isFileExists(String path) {
+		File file = new File(path);
+		if (file.exists()) {
 			return true;
 		}
 		return false;
 	}
 	
 	/**
-	 * 创建用户对应的文件
+	 * 创建文件
 	 */
-	public static boolean createUserFile(User user) {
-		if (!isUserFileExists(user)) {
+	private static boolean createFile(String path) {
+		if (!isFileExists(path)) {
 			try {
-				new File(USER_DIRECTORY + user.getUserid() + ".dat").createNewFile();
+				new File(path).createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -81,5 +89,129 @@ public class IOUtility {
 		return false;
 	}
 	
-	public Object 
+	/**
+	 * 将用户信息持久化到文件中
+	 */
+	public static void writeUserToFile(User user) {
+		String path = USER_DIRECTORY + user.getUserid() + ".dat";
+		createFile(path);
+		File userfile = new File(path);
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(userfile);
+			persistObject(user, out);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 根据userid从文件中取得对应的user对象
+	 * @param id 用户id
+	 * @return
+	 */
+	public static User readUserFromFile(int id){
+		String path = USER_DIRECTORY + id + ".dat";
+		if (!isFileExists(path)) {
+			return null;
+		}
+		File userfile = new File(path);
+		InputStream in = null;
+		try {
+			in = new FileInputStream(userfile);
+			User user = (User)getObject(in);
+			return user;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 将管理员信息持久化到文件中
+	 */
+	public static void writeAdminToFile(Admin admin) {
+		String path = USER_DIRECTORY + admin.getAdminid() + ".dat";
+		createFile(path);
+		File userfile = new File(path);
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(userfile);
+			persistObject(admin, out);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 根据adminid从文件中取得对应的admin对象
+	 * @param adminid 管理员id
+	 */
+	public static Admin readAdminFromFile(int adminid) {
+		String path = ADMIN_DIRECTORY + adminid + ".dat";
+		if (!isFileExists(path)) {
+			return null;
+		}
+		File adminfile = new File(path);
+		InputStream in = null;
+		try {
+			in = new FileInputStream(adminfile);
+			Admin admin = (Admin)getObject(in);
+			return admin;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 对象持久化
+	 * @param object 要持久化的对象
+	 * @param out 输出流
+	 * @throws Exception 出现错误后抛出
+	 */
+	public static void persistObject(Object object, OutputStream out){
+		if (object == null) {
+			return ;
+		}
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(out);
+			oos.writeObject(object);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				oos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 从输入流中反序列化对象
+	 * @param in
+	 * @return 对象
+	 */
+	public static Object getObject(InputStream in) {
+		if (in == null) {
+			return null;
+		}
+		ObjectInputStream ois = null;
+		Object object = null;
+		try {
+			ois = new ObjectInputStream(in);
+			object = ois.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				ois.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return object;
+	}
 }
