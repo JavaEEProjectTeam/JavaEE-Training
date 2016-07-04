@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import java.awt.Toolkit;
 
 public class AdminLogin extends JFrame {
 
@@ -38,38 +39,39 @@ public class AdminLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public AdminLogin() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(AdminLogin.class.getResource("/img/admin_llogin_logo.png")));
 		setTitle("中北线在商场管理系统-管理员登录");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 461, 349);
+		setBounds(100, 100, 534, 409);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JLabel label = new JLabel("用户名:");
-		label.setBounds(87, 146, 54, 15);
+		label.setBounds(151, 245, 54, 15);
 		contentPane.add(label);
 		
 		JLabel label_1 = new JLabel("密  码:");
-		label_1.setBounds(87, 185, 54, 15);
+		label_1.setBounds(151, 276, 54, 15);
 		contentPane.add(label_1);
 		
 		textField = new JTextField();
-		textField.setBounds(151, 146, 197, 21);
+		textField.setBounds(215, 242, 197, 21);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(151, 185, 197, 21);
+		passwordField.setBounds(215, 273, 197, 21);
 		contentPane.add(passwordField);
 		
 		JButton button = new JButton("登录系统");
-		button.setBounds(255, 216, 93, 23);
+		button.setBounds(252, 319, 93, 23);
 		contentPane.add(button);
 		
 		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(AdminLogin.class.getResource("/image/a.jpg")));
-		lblNewLabel.setBounds(208, 54, 86, 82);
+		lblNewLabel.setIcon(new ImageIcon(AdminLogin.class.getResource("/img/user.png")));
+		lblNewLabel.setBounds(140, 10, 255, 235);
 		contentPane.add(lblNewLabel);
 	}
 }
