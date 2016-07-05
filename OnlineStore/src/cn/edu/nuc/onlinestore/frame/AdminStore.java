@@ -27,6 +27,7 @@ import java.awt.event.WindowEvent;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -145,7 +146,16 @@ public class AdminStore extends JFrame {
 		JButton modifyGoodsButton = new JButton("修改商品");
 		modifyGoodsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				AdminUpdate u = new AdminUpdate();
+				int selectRow = table.getSelectedRow();
+				if (selectRow == -1) { //用户未做选择
+					JOptionPane.showMessageDialog(null, "您没有选择商品，请您选中某个商品后再单击此按钮！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int num = Integer.parseInt(
+						table.getValueAt(table.getSelectedRow(),0).toString());
+				AdminUpdate u = new AdminUpdate(
+						IOUtility.getGoodsById(num),table);
 				u.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 				u.setVisible(true);
 			}
@@ -158,8 +168,22 @@ public class AdminStore extends JFrame {
 		deleteGoodsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//得到当前选中商品项
-				JOptionPane.showConfirmDialog(null, "确定要删除" + "水杯" + "么?", 
+				int selectRow = table.getSelectedRow();
+				if (selectRow == -1) { //用户未做选择
+					JOptionPane.showMessageDialog(null, "您没有选择商品，请您选中某个商品后再单击此按钮！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int num = Integer.parseInt(
+						table.getValueAt(table.getSelectedRow(),0).toString());
+				Goods goods = IOUtility.getGoodsById(num);
+				int select = JOptionPane.showConfirmDialog(null, "确定要删除" + goods.getGoodsName() + "么?", 
 						"提示", JOptionPane.YES_NO_OPTION);
+				if (select == 0) { //选择了是
+					IOUtility.deleteGoods(goods.getGid());
+				}
+				updateGoodsList(IOUtility.getAllGoods(), model); //更新列表
+				table.updateUI();  //刷新显示
 			}
 		});
 		deleteGoodsButton.setBounds(587, 45, 119, 23);
@@ -212,6 +236,29 @@ public class AdminStore extends JFrame {
 		
 		//搜索按钮
 		JButton searchButton = new JButton("搜索");
+		searchButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (goodsid.getText() == null || goodsid.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "您没有输入任何内容，默认显示全部商品信息！");
+					updateGoodsList(IOUtility.getAllGoods(), model);
+					table.updateUI();
+					return;
+				}
+				int id = Integer.parseInt(goodsid.getText());
+				Goods goods = IOUtility.getGoodsById(id);
+				if (goods == null) {
+					JOptionPane.showMessageDialog(null, "没有找到编号为" + id + "的商品！");
+					updateGoodsList(IOUtility.getAllGoods(), model);
+					table.updateUI();
+					return;
+				}
+				List<Goods> gList = new ArrayList<Goods>();
+				gList.add(goods);
+				updateGoodsList(gList, model);
+				table.updateUI();
+			}
+		});
 		searchButton.setBounds(193, 49, 93, 23);
 		contentPane.add(searchButton);
 	}

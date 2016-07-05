@@ -130,6 +130,33 @@ public class IOUtility {
 	}
 	
 	/**
+	 * 根据id获得商品信息
+	 * @param id 商品id
+	 * @return
+	 */
+	public static Goods getGoodsById(int id) {
+		List<Goods> list = getAllGoods();
+		for (Goods goods : list) {
+			if (goods.getGid() == id) {
+				return goods;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 删除商品信息
+	 * @param id 商品id
+	 */
+	public static void deleteGoods(int id) {
+		String path = GOODS_DIRECTORY + id + ".dat";
+		File deleteFile = new File(path);
+		if (deleteFile.exists()) {
+			deleteFile.delete();
+		}
+	}
+	
+	/**
 	 * 将用户信息持久化到文件中
 	 * @param user 用户信息
 	 */
