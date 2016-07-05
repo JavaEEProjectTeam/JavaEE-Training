@@ -145,6 +145,21 @@ public class IOUtility {
 	}
 	
 	/**
+	 * 按名称检索货物
+	 * @return
+	 */
+	public static List<Goods> getGoodsByName(String goodsName) {
+		List<Goods> list = getAllGoods();
+		List<Goods> finalList = new ArrayList<Goods>();
+		for (Goods goods : list) {
+			if (goods.getGoodsName().equals(goodsName)) {
+				finalList.add(goods);  //加入最终列表
+			}
+		}
+		return finalList;  //返回最终结果
+	}
+	
+	/**
 	 * 删除商品信息
 	 * @param id 商品id
 	 */

@@ -15,14 +15,15 @@ public class LoginRegisterService {
 	
 	/**
 	 * 普通用户登录验证
-	 * @param temp
-	 * @return
+	 * @param username 用户名
+	 * @param password 密码
+	 * @return 验证结果
 	 */
-	public static boolean userLoginValidate(User temp) {
+	public static boolean userLoginValidate(String username, String pasword) {
 		List<User> list = IOUtility.getAllUser();
 		for (User user : list) {
-			if (user.getUsername().equals(temp.getUsername()) 
-				&& user.getPassword().equals(temp.getPassword())){
+			if (user.getUsername().equals(username) 
+				&& user.getPassword().equals(pasword)){
 				return true;
 			}
 		}
@@ -40,14 +41,14 @@ public class LoginRegisterService {
 	
 	/**
 	 * 管理员登录
-	 * @param admin 管理员登录
+	 * @param 
 	 * @return 登录验证结果
 	 */
-	public static boolean adminLoginValidate(Admin temp) {
+	public static boolean adminLoginValidate(String aname, String apass) {
 		List<Admin> list = IOUtility.getAllAdmin();
 		for (Admin admin : list) {
-			if (admin.getAdminName().equals(temp.getAdminName())
-					&& admin.getPassword().equals(temp.getPassword())) {
+			if (admin.getAdminName().equals(aname)
+					&& admin.getPassword().equals(apass)) {
 				return true;
 			}
 		}

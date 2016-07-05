@@ -17,13 +17,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import cn.edu.nuc.onlinestore.io.IOUtility;
-import cn.edu.nuc.onlinestore.model.Admin;
 import cn.edu.nuc.onlinestore.model.Goods;
+import cn.edu.nuc.onlinestore.network.TCPServer;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -72,14 +70,19 @@ public class AdminStore extends JFrame {
 	 */
 	private DefaultTableModel model;
 	
-	public AdminStore(JFrame perviousFrame, Admin admin) {
+	/**
+	 * 服务器线程
+	 */
+	private TCPServer server;
+	
+	public AdminStore(JFrame perviousFrame, String adminname) {
 		
 		//设置图标
 		setIconImage(Toolkit.getDefaultToolkit().getImage(
 				AdminStore.class.getResource("/img/admin_llogin_logo.png")));
 		
 		//设置标题
-		setTitle("中北商场后台管理系统--当前用户:" + admin.getAdminName());
+		setTitle("中北商场后台管理系统--当前用户:" + adminname);
 		
 		//设置默认的关闭行为
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -194,29 +197,17 @@ public class AdminStore extends JFrame {
 		exitButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int select = JOptionPane.showConfirmDialog(null, "您要注销吗？", 
+				int select = JOptionPane.showConfirmDialog(null, "您要注销吗（服务器会随之关闭）？", 
 						"提示", JOptionPane.YES_NO_OPTION);
 				if (select == 0) {  //用户选择了是
 					AdminStore.this.perviousFrame.setVisible(true);
 					thisFrame.setVisible(false);
+					server.stopServer();
 				}
 			}
 		});
 		exitButton.setBounds(613, 6, 93, 23);
 		contentPane.add(exitButton);
-		
-		//设置窗口关闭时的行为
-		thisFrame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				int select = JOptionPane.showConfirmDialog(
-						null, "要关闭系统吗，服务器会随之停止运行", 
-						"提示", JOptionPane.YES_NO_CANCEL_OPTION);
-				if(select == 0) { //用户选择是
-					System.exit(0);
-				}
-			}
-		});
 		
 		//在线用户数
 		JLabel onlineUserCount = new JLabel("当前在线用户数: 0");
@@ -261,6 +252,10 @@ public class AdminStore extends JFrame {
 		});
 		searchButton.setBounds(193, 49, 93, 23);
 		contentPane.add(searchButton);
+		
+		//打开服务器
+		server = new TCPServer(onlineUserCount);
+		server.start();
 	}
 	
 	/**

@@ -12,7 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import cn.edu.nuc.onlinestore.model.Admin;
 import cn.edu.nuc.onlinestore.service.LoginRegisterService;
 
 import java.awt.Toolkit;
@@ -25,9 +24,25 @@ public class AdminLogin extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 201596698169710930L;
+	
+	/**
+	 * 主面板
+	 */
 	private JPanel contentPane;
+	
+	/**
+	 * 管理员名输入框
+	 */
 	private JTextField adminName;
+	
+	/**
+	 * 密码输入区
+	 */
 	private JPasswordField password;
+	
+	/**
+	 * 当前窗体
+	 */
 	private JFrame thisFrame;
 
 	/**
@@ -83,11 +98,8 @@ public class AdminLogin extends JFrame {
 							"警告", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				Admin admin = new Admin();
-				admin.setAdminName(adminname);
-				admin.setPassword(adpassword);
-				if (LoginRegisterService.adminLoginValidate(admin)) {
-					JFrame jf = new AdminStore(thisFrame, admin);
+				if (LoginRegisterService.adminLoginValidate(adminname,adpassword)) {
+					JFrame jf = new AdminStore(thisFrame, adminname);
 					thisFrame.setVisible(false);
 					jf.setVisible(true);
 				}
