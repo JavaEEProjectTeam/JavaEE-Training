@@ -113,7 +113,7 @@ public class AdminLogin extends JFrame {
 		contentPane.add(loginButton);
 		
 		JLabel picture = new JLabel("");
-		picture.setIcon(new ImageIcon(AdminLogin.class.getResource("/img/user.png")));
+		picture.setIcon(new ImageIcon(AdminLogin.class.getResource("/img/admin.png")));
 		picture.setBounds(140, 10, 255, 235);
 		contentPane.add(picture);
 	}
