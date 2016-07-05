@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.edu.nuc.onlinestore.model.Admin;
+import cn.edu.nuc.onlinestore.model.Goods;
 import cn.edu.nuc.onlinestore.model.User;
 
 /**
@@ -25,22 +26,26 @@ public class IOUtility {
 	/**
 	 * 应用根目录
 	 */
-	private static final String ROOT_DIRECTORY = "D:" + File.separator + "store" + File.separator;
+	private static final String ROOT_DIRECTORY = 
+			"D:" + File.separator + "store" + File.separator;
 	
 	/**
 	 * 商品目录(一件商品存为一个独立文件)
 	 */
-	private static final String GOODS_DIRECTORY = ROOT_DIRECTORY + "goods" + File.separator;
+	private static final String GOODS_DIRECTORY = 
+			ROOT_DIRECTORY + "goods" + File.separator;
 	
 	/**
 	 * 管理员帐号目录(一位管理员对应一独立文件) 
 	 */
-	private static final String ADMIN_DIRECTORY = ROOT_DIRECTORY + "admin" + File.separator;
+	private static final String ADMIN_DIRECTORY = 
+			ROOT_DIRECTORY + "admin" + File.separator;
 	
 	/**
 	 * 客户帐号目录(一位客户对应一独立文件)
 	 */
-	private static final String USER_DIRECTORY = ROOT_DIRECTORY + "user" + File.separator;
+	private static final String USER_DIRECTORY = 
+			ROOT_DIRECTORY + "user" + File.separator;
 	
 	/**
 	 * 检测并创建所有工作目录
@@ -108,6 +113,23 @@ public class IOUtility {
 	}
 	
 	/**
+	 * 获得下一个商品编号
+	 * @return
+	 */
+	public static int getNextGoodsId() {
+		String[] goodsFileNames = new File(GOODS_DIRECTORY).list();
+		int max = -1;
+		for (String string : goodsFileNames) {
+			string = string.substring(0, string.indexOf('.'));
+			int num = Integer.parseInt(string);
+			if (max < num) {
+				max = num;
+			}
+		}
+		return max + 1;
+	}
+	
+	/**
 	 * 将用户信息持久化到文件中
 	 * @param user 用户信息
 	 */
@@ -121,28 +143,6 @@ public class IOUtility {
 			persistObject(user, out);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * 根据userid从文件中取得对应的user对象
-	 * @param id 用户id
-	 * @return User实例
-	 */
-	public static User readUserFromFile(int id){
-		String path = USER_DIRECTORY + id + ".dat";
-		if (!isFileExists(path)) {
-			return null;
-		}
-		File userfile = new File(path);
-		InputStream in = null;
-		try {
-			in = new FileInputStream(userfile);
-			User user = (User)getObject(in);
-			return user;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
 		}
 	}
 	
@@ -162,12 +162,33 @@ public class IOUtility {
 		}
 	}
 	
+	/**
+	 * 将货物信息持久化到文件中
+	 */
+	public static void writeGoodsToFile(Goods goods) {
+		String path = GOODS_DIRECTORY + goods.getGid() + ".dat";
+		createFile(path);
+		File goodsfile = new File(path);
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(goodsfile);
+			persistObject(goods, out);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 得到所有的管理员信息
+	 * @return 所有管理员信息
+	 */
 	public static List<Admin> getAllAdmin() {
 		List<Admin> list = new ArrayList<Admin>();
 		File[] adminfiles = new File(ADMIN_DIRECTORY).listFiles();
 		try {
 			for (File file : adminfiles) {
-				Admin admin = (Admin)getObject(new FileInputStream(file));
+				Admin admin = (Admin)getObject(
+						new FileInputStream(file));
 				list.add(admin);
 			}
 			return list;
@@ -178,20 +199,39 @@ public class IOUtility {
 	}
 	
 	/**
-	 * 根据adminid从文件中取得对应的admin对象
-	 * @param adminid 管理员id
+	 * 得到所有的客户信息
+	 * @return 所有客户信息
 	 */
-	public static Admin readAdminFromFile(int adminid) {
-		String path = ADMIN_DIRECTORY + adminid + ".dat";
-		if (!isFileExists(path)) {
+	public static List<User> getAllUser() {
+		List<User> list = new ArrayList<User>();
+		File[] userfiles = new File(USER_DIRECTORY).listFiles();
+		try {
+			for (File file : userfiles) {
+				User user = (User)getObject(
+						new FileInputStream(file));
+				list.add(user);
+			}
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
-		File adminfile = new File(path);
-		InputStream in = null;
+	}
+	
+	/**
+	 * 得到所有的客户信息
+	 * @return 所有客户信息
+	 */
+	public static List<Goods> getAllGoods() {
+		List<Goods> list = new ArrayList<Goods>();
+		File[] goodsfiles = new File(GOODS_DIRECTORY).listFiles();
 		try {
-			in = new FileInputStream(adminfile);
-			Admin admin = (Admin)getObject(in);
-			return admin;
+			for (File file : goodsfiles) {
+				Goods goods = (Goods)getObject(
+						new FileInputStream(file));
+				list.add(goods);
+			}
+			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -19,10 +19,10 @@ public class LoginRegisterService {
 	 * @return
 	 */
 	public static boolean userLoginValidate(User temp) {
-		User user = IOUtility.readUserFromFile(temp.getUserid());
-		if (user != null) {
-			if (user.getUsername().equals(temp.getUsername())
-					&& user.getPassword().equals(temp.getPassword())) {
+		List<User> list = IOUtility.getAllUser();
+		for (User user : list) {
+			if (user.getUsername().equals(temp.getUsername()) 
+				&& user.getPassword().equals(temp.getPassword())){
 				return true;
 			}
 		}
@@ -45,7 +45,6 @@ public class LoginRegisterService {
 	 */
 	public static boolean adminLoginValidate(Admin temp) {
 		List<Admin> list = IOUtility.getAllAdmin();
-		System.out.println(list);
 		for (Admin admin : list) {
 			if (admin.getAdminName().equals(temp.getAdminName())
 					&& admin.getPassword().equals(temp.getPassword())) {

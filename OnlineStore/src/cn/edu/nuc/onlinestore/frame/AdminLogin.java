@@ -1,7 +1,5 @@
 package cn.edu.nuc.onlinestore.frame;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -11,6 +9,8 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import cn.edu.nuc.onlinestore.model.Admin;
 import cn.edu.nuc.onlinestore.service.LoginRegisterService;
@@ -43,6 +43,17 @@ public class AdminLogin extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		thisFrame = this;
+		
+		//设置窗体居中
+		setLocationRelativeTo(null);
+		
+		//设置界面风格为操作系统默认风格
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);  
 		
 		JLabel adminNameLabel = new JLabel("用户名:");
 		adminNameLabel.setBounds(151, 245, 54, 15);
@@ -77,6 +88,8 @@ public class AdminLogin extends JFrame {
 				admin.setPassword(adpassword);
 				if (LoginRegisterService.adminLoginValidate(admin)) {
 					JFrame jf = new AdminStore(thisFrame, admin);
+					thisFrame.setVisible(false);
+					jf.setVisible(true);
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "登录失败！用户名或密码错误！",

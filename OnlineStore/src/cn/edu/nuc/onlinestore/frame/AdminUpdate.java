@@ -1,7 +1,5 @@
 package cn.edu.nuc.onlinestore.frame;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -12,18 +10,26 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import java.awt.Toolkit;
 
 public class AdminUpdate extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -594504024620937054L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField goodsName;
+	private JTextField unitPrice;
+	private JTextField count;
 
 	/**
 	 * Create the frame.
 	 */
 	public AdminUpdate() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(AdminUpdate.class.getResource("/img/admin_llogin_logo.png")));
 		setTitle("修改商品");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 405);
@@ -32,48 +38,59 @@ public class AdminUpdate extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel label = new JLabel("商品名称:");
-		label.setBounds(23, 57, 66, 15);
-		contentPane.add(label);
+		//设置窗体居中
+		setLocationRelativeTo(null);
 		
-		textField = new JTextField();
-		textField.setBounds(99, 54, 269, 21);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		//设置界面风格为操作系统默认风格
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);  
 		
-		JLabel label_1 = new JLabel("单价:");
-		label_1.setBounds(35, 100, 54, 15);
-		contentPane.add(label_1);
+		JLabel goodsname_label = new JLabel("商品名称:");
+		goodsname_label.setBounds(23, 57, 66, 15);
+		contentPane.add(goodsname_label);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(99, 97, 212, 21);
-		contentPane.add(textField_1);
-		textField_1.setColumns(10);
+		goodsName = new JTextField();
+		goodsName.setBounds(99, 54, 269, 21);
+		contentPane.add(goodsName);
+		goodsName.setColumns(10);
 		
-		JLabel label_2 = new JLabel("单位:元");
-		label_2.setBounds(321, 100, 54, 15);
-		contentPane.add(label_2);
+		JLabel unitprice_label = new JLabel("单价:");
+		unitprice_label.setBounds(35, 100, 54, 15);
+		contentPane.add(unitprice_label);
 		
-		JLabel label_3 = new JLabel("数量:");
-		label_3.setBounds(35, 143, 54, 15);
-		contentPane.add(label_3);
+		unitPrice = new JTextField();
+		unitPrice.setBounds(99, 97, 212, 21);
+		contentPane.add(unitPrice);
+		unitPrice.setColumns(10);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(99, 140, 212, 21);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
+		JLabel prickle = new JLabel("单位:元");
+		prickle.setBounds(321, 100, 54, 15);
+		contentPane.add(prickle);
 		
-		JLabel label_4 = new JLabel("简介:");
-		label_4.setBounds(35, 188, 54, 15);
-		contentPane.add(label_4);
+		JLabel count_label = new JLabel("数量:");
+		count_label.setBounds(35, 143, 54, 15);
+		contentPane.add(count_label);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(99, 184, 269, 103);
-		contentPane.add(textArea);
+		count = new JTextField();
+		count.setBounds(99, 140, 212, 21);
+		contentPane.add(count);
+		count.setColumns(10);
 		
-		JButton button = new JButton("确定修改");
-		button.setBounds(275, 310, 93, 23);
-		contentPane.add(button);
+		JLabel note_label = new JLabel("简介:");
+		note_label.setBounds(35, 188, 54, 15);
+		contentPane.add(note_label);
+		
+		JTextArea note = new JTextArea();
+		note.setBounds(99, 184, 269, 103);
+		contentPane.add(note);
+		
+		JButton confirmButton = new JButton("确定修改");
+		confirmButton.setBounds(275, 310, 93, 23);
+		contentPane.add(confirmButton);
 		
 		JLabel label_5 = new JLabel(">=0");
 		label_5.setBounds(321, 143, 43, 15);
