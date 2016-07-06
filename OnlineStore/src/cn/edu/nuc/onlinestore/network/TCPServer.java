@@ -1,9 +1,11 @@
 package cn.edu.nuc.onlinestore.network;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,42 +61,18 @@ public class TCPServer extends Thread{
 	@Override
 	public void run() {
 		Socket client = null;
-		InputStream in = null;
 		flag = true;
 		System.out.println("服务器成功启动，准备接受用户的请求...");
 		while (flag) {
 			try {
 				//阻塞等待客户端连接
 				client = server.accept();
-				in = client.getInputStream();
-				Request clientMessage = (Request)IOUtility.getObject(in);
-				
-				switch (clientMessage.getType()) {
-					case Request.LOGIN_MESSAGE:   //登录操作
-						userLogin(client, clientMessage, onlineCountLabel);
-						break;
-					case Request.REGISTER_MESSAGE://注册操作
-						userRegister(client, clientMessage);
-						break;
-					case Request.OFFLINE_MESSAGE: //离线操作
-						userOffline(clientMessage);
-						break;
-					case Request.SEARCH_MESSAGE:  //检索操作
-						searchGoodsByName(client, clientMessage);
-						break;
-					case Request.PAY_MESSAGE:     //结账操作
-						userPay(client, clientMessage);
-						break;
-				}
+				new ClientThread(client).start(); //new新线程处理客户端请求
+			} catch(EOFException e) {
+				//读到尾了，不管他
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				try {
-					client.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			} 
 		}
 	}
 	
@@ -108,7 +86,7 @@ public class TCPServer extends Thread{
 		Response response = new Response();
 		response.setMessageType(Response.PAY_MESSAGE);
 		response.setMessage(message);
-		IOUtility.persistObject(response, client.getOutputStream());
+		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 	}
 
 	/**
@@ -117,8 +95,8 @@ public class TCPServer extends Thread{
 	 * @throws Exception 向客户端发送消息的过程中出现异常
 	 */
 	private void userOffline(Request clientMessage) throws Exception {
-		onlineClient.get(clientMessage).close();          //关闭客户端连接
-		onlineClient.remove(clientMessage.getUsername()); //从在线列表中移除
+		onlineClient.get(clientMessage.getUsername()).close(); //关闭客户端连接
+		onlineClient.remove(clientMessage.getUsername());      //从在线列表中移除
 	}
 
 	/**
@@ -135,7 +113,7 @@ public class TCPServer extends Thread{
 		response.setResult(true);
 		response.setMessageType(Response.SEARCH_MESSAGE);
 		response.setObj(goodslist);
-		IOUtility.persistObject(response, client.getOutputStream());
+		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 	}
 
 	/**
@@ -174,7 +152,7 @@ public class TCPServer extends Thread{
 		response.setMessageType(Response.LOGIN_MESSAGE);
 		response.setMessage(clientMessage.getUsername());
 		response.setObj(IOUtility.getAllGoods());  //向客户发送所有商品信息
-		IOUtility.persistObject(response, client.getOutputStream());
+		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 	}
 	
 	/**
@@ -182,5 +160,75 @@ public class TCPServer extends Thread{
 	 */
 	public void stopServer() {
 		flag = false;
+	}
+	
+	/**
+	 * 处理用户请求的内部类
+	 * @author 王凯
+	 *
+	 */
+	private class ClientThread extends Thread {
+		
+		private Socket client;
+		
+		private InputStream in;
+		
+		private volatile boolean flag;
+		
+		public ClientThread(Socket client) {
+			this.client = client;
+			try {
+				in = client.getInputStream();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void run() {
+			flag = true;
+			try {
+				while (flag) {	
+					System.out.println(in);
+					Request clientMessage = (Request)IOUtility.getObjectNoClose(in);
+					if (clientMessage == null) {
+						continue;
+					}
+					switch (clientMessage.getType()) {
+						case Request.LOGIN_MESSAGE:   //登录操作
+							userLogin(client, clientMessage, onlineCountLabel);
+							break;
+						case Request.REGISTER_MESSAGE://注册操作
+							userRegister(client, clientMessage);
+							break;
+						case Request.OFFLINE_MESSAGE: //离线操作
+							userOffline(clientMessage);
+							flag = false;
+							break;
+						case Request.SEARCH_MESSAGE:  //检索操作
+							searchGoodsByName(client, clientMessage);
+							break;
+						case Request.PAY_MESSAGE:     //结账操作
+							userPay(client, clientMessage);
+							break;
+					}
+				
+				}
+			} catch (SocketException e) {
+				System.out.println("客户端无故掉线或网络出现故障！");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (client != null && !client.isClosed()) {
+						client.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }

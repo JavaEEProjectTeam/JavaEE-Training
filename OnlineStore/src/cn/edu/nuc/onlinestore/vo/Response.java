@@ -68,7 +68,7 @@ public class Response implements Serializable {
 		this.messageType = messageType;
 	}
 
-	public boolean isResult() {
+	public boolean getResult() {
 		return result;
 	}
 

@@ -1,5 +1,6 @@
 package cn.edu.nuc.onlinestore.io;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -290,18 +291,36 @@ public class IOUtility {
 		if (object == null) {
 			return ;
 		}
+		try {
+			persistObjectNoClose(object, out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 对象持久化不关闭流
+	 * @param object 要持久化的对象
+	 * @param out 输出流
+	 * @throws Exception 出现错误后抛出
+	 */
+	public static void persistObjectNoClose(Object object, OutputStream out){
+		if (object == null) {
+			return ;
+		}
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(out);
 			oos.writeObject(object);
+			//oos.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	
@@ -314,19 +333,34 @@ public class IOUtility {
 		if (in == null) {
 			return null;
 		}
-		ObjectInputStream ois = null;
 		Object object = null;
 		try {
-			ois = new ObjectInputStream(in);
-			object = ois.readObject();
+			object = getObjectNoClose(in);
+			in.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				ois.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		} 
+		return object;
+	}
+	
+	/**
+	 * 从输入流中反序列化对象不关闭流
+	 * @param in
+	 * @return 对象
+	 * @throws Exception 
+	 */
+	public static Object getObjectNoClose(InputStream in) {
+		if (in == null) {
+			return null;
+		}
+		Object object = null;
+		try {
+			ObjectInputStream ois = new ObjectInputStream(in);
+			object = ois.readObject();
+		} catch(EOFException e) {
+			//读到尾了，不管他
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return object;
 	}
