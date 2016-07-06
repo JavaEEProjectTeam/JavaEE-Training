@@ -94,8 +94,12 @@ public class TCPServer extends Thread{
 	 * @param clientMessage 向客户端发送的消息
 	 * @throws Exception 向客户端发送消息的过程中出现异常
 	 */
-	private void userOffline(Request clientMessage) throws Exception {
-		onlineClient.get(clientMessage.getUsername()).close(); //关闭客户端连接
+	private void userOffline(Socket client, Request clientMessage) throws Exception {
+		Response response = new Response();
+		response.setMessageType(Response.OFFLINE_MESSAGE);
+		response.setResult(true);
+		IOUtility.persistObjectNoClose(response, client.getOutputStream());
+		client.close(); //关闭客户端连接
 		onlineClient.remove(clientMessage.getUsername());      //从在线列表中移除
 	}
 
@@ -202,7 +206,7 @@ public class TCPServer extends Thread{
 							userRegister(client, clientMessage);
 							break;
 						case Request.OFFLINE_MESSAGE: //离线操作
-							userOffline(clientMessage);
+							userOffline(client, clientMessage);
 							flag = false;
 							break;
 						case Request.SEARCH_MESSAGE:  //检索操作
