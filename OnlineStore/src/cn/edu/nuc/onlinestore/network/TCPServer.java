@@ -6,10 +6,8 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.JLabel;
 
 import cn.edu.nuc.onlinestore.io.IOUtility;
@@ -39,7 +37,7 @@ public class TCPServer extends Thread{
 	/**
 	 * 在线用户列表
 	 */
-	private volatile Map<String, Socket> onlineClient = new HashMap<String, Socket>();
+	private volatile List<Socket> onlineClient = new ArrayList<Socket>();
 	
 	/**
 	 * 标记用户上线数量的标签
@@ -67,6 +65,7 @@ public class TCPServer extends Thread{
 			try {
 				//阻塞等待客户端连接
 				client = server.accept();
+				System.out.println("收到" + client + "的请求！");
 				new ClientThread(client).start(); //new新线程处理客户端请求
 			} catch(EOFException e) {
 				//读到尾了，不管他
@@ -94,13 +93,15 @@ public class TCPServer extends Thread{
 	 * @param clientMessage 向客户端发送的消息
 	 * @throws Exception 向客户端发送消息的过程中出现异常
 	 */
-	private void userOffline(Socket client, Request clientMessage) throws Exception {
+	private void userOffline(Socket client, Request clientMessage, JLabel label) throws Exception {
+		onlineClient.remove(client);
 		Response response = new Response();
 		response.setMessageType(Response.OFFLINE_MESSAGE);
 		response.setResult(true);
 		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 		client.close(); //关闭客户端连接
-		onlineClient.remove(clientMessage.getUsername());      //从在线列表中移除
+		label.setText("当前在线用户数: " + onlineClient.size());
+		label.updateUI();  //更新界面显示
 	}
 
 	/**
@@ -147,7 +148,7 @@ public class TCPServer extends Thread{
 				clientMessage.getUsername(), clientMessage.getPassword());
 		Response response = new Response();
 		if (flag == true) { //验证通过
-			onlineClient.put(clientMessage.getUsername(), client); //加入在线用户列表
+			onlineClient.add(client); //加入在线用户列表
 			label.setText("当前在线用户数: " + onlineClient.size());
 			label.updateUI();  //更新界面显示
 		}
@@ -193,7 +194,6 @@ public class TCPServer extends Thread{
 			flag = true;
 			try {
 				while (flag) {	
-					System.out.println(in);
 					Request clientMessage = (Request)IOUtility.getObjectNoClose(in);
 					if (clientMessage == null) {
 						continue;
@@ -206,7 +206,7 @@ public class TCPServer extends Thread{
 							userRegister(client, clientMessage);
 							break;
 						case Request.OFFLINE_MESSAGE: //离线操作
-							userOffline(client, clientMessage);
+							userOffline(client, clientMessage, onlineCountLabel);
 							flag = false;
 							break;
 						case Request.SEARCH_MESSAGE:  //检索操作

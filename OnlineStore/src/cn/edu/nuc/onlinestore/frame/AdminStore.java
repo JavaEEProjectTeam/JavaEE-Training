@@ -51,16 +51,6 @@ public class AdminStore extends JFrame {
 	private JTextField goodsid;
 	
 	/**
-	 * 上一个窗口
-	 */
-	private JFrame perviousFrame;
-	
-	/**
-	 * 本窗口
-	 */
-	private JFrame thisFrame;
-	
-	/**
 	 * 商品列表
 	 */
 	private JTable table;
@@ -75,7 +65,7 @@ public class AdminStore extends JFrame {
 	 */
 	private TCPServer server;
 	
-	public AdminStore(JFrame perviousFrame, String adminname) {
+	public AdminStore(String adminname) {
 		
 		//设置图标
 		setIconImage(Toolkit.getDefaultToolkit().getImage(
@@ -100,11 +90,7 @@ public class AdminStore extends JFrame {
 			e.printStackTrace();
 		}
 		SwingUtilities.updateComponentTreeUI(this);  
-		
-		//保存前一个窗口和当前窗口的实例，注销时用
-		this.perviousFrame = perviousFrame; 
-		thisFrame = this;
-		
+	
 		//设置主面板及其布局
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -197,12 +183,11 @@ public class AdminStore extends JFrame {
 		exitButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int select = JOptionPane.showConfirmDialog(null, "您要注销吗（服务器会随之关闭）？", 
+				int select = JOptionPane.showConfirmDialog(null, "您要退出吗（服务器会随之关闭）？", 
 						"提示", JOptionPane.YES_NO_OPTION);
 				if (select == 0) {  //用户选择了是
-					AdminStore.this.perviousFrame.setVisible(true);
-					thisFrame.setVisible(false);
 					server.stopServer();
+					System.exit(0);
 				}
 			}
 		});

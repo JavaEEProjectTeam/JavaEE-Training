@@ -152,9 +152,14 @@ public class IOUtility {
 	public static List<Goods> getGoodsByName(String goodsName) {
 		List<Goods> list = getAllGoods();
 		List<Goods> finalList = new ArrayList<Goods>();
-		for (Goods goods : list) {
-			if (goods.getGoodsName().equals(goodsName)) {
-				finalList.add(goods);  //加入最终列表
+		if (goodsName == null && "".equals(goodsName)) { //用户未作输入或刻意想要查询全部
+			finalList = getAllGoods();
+		}
+		else { //用户想找匹配项
+			for (Goods goods : list) {
+				if (goods.getGoodsName().indexOf(goodsName) != -1) { //对用户的输入要求不严格，只要包含的都算
+					finalList.add(goods);  //加入最终列表
+				}
 			}
 		}
 		return finalList;  //返回最终结果

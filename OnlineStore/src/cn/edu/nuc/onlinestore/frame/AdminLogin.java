@@ -99,7 +99,7 @@ public class AdminLogin extends JFrame {
 					return;
 				}
 				if (LoginRegisterService.adminLoginValidate(adminname,adpassword)) {
-					JFrame jf = new AdminStore(thisFrame, adminname);
+					JFrame jf = new AdminStore(adminname);
 					thisFrame.setVisible(false);
 					jf.setVisible(true);
 				}
