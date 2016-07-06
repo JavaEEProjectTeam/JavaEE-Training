@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import cn.edu.nuc.onlinestore.model.Cart;
 import cn.edu.nuc.onlinestore.model.Goods;
 import cn.edu.nuc.onlinestore.network.TCPClient;
 import cn.edu.nuc.onlinestore.service.GoodsService;
@@ -41,7 +42,7 @@ public class UserStore extends JFrame {
 	private JFrame thisFrame;
 	private TCPClient client;
 	private static JTable table;
-	private String username;
+	private Cart cart = new Cart();
 
 	/**
 	 * 创建窗体
@@ -54,8 +55,6 @@ public class UserStore extends JFrame {
 		
 		//设置标题
 		setTitle("中北在线商场--当前用户:" + username);
-		
-		this.username = username;
 		
 		//设置默认的关闭行为
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

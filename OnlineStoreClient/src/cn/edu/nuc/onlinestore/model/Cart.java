@@ -3,13 +3,14 @@ package cn.edu.nuc.onlinestore.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Cart implements Serializable {
 	
 	private static final long serialVersionUID = -5523647580332725112L;
 	
 	
-	private Map<Goods, Integer> maps = new HashMap<>();
+	private Map<Goods, Integer> shoppingCart = new HashMap<Goods, Integer>();
 	
 	//购物车商品总价格
 	private double totalPrice = 0;
@@ -25,16 +26,22 @@ public class Cart implements Serializable {
 	 */
 	public int add(Goods goods, int quantity){
 		
-		if( maps.get( goods ) == null ){
+		if( shoppingCart.get(goods) == null ){
 			//如果maps 里没有该商品,直接添加
+			shoppingCart.put(goods, quantity);
 		} else {
 			//如果maps 里已存在当前添加商品,则累加商品数量
+			int oldcount = shoppingCart.get(goods);
+			int newcount = quantity + oldcount;
+			shoppingCart.remove(goods);         //移除旧的
+			shoppingCart.put(goods, newcount);  //换成新的
 		}
 		
 		//添加商品后调用计算购物车总金额、总价格方法
 		this.total();
+		
 		//返回该商品在购物车内总数量
-		return 0;
+		return shoppingCart.get(goods);
 	}
 	
 	/**
@@ -44,7 +51,7 @@ public class Cart implements Serializable {
 	 */
 	public int remove(Goods goods){
 		
-		int q = maps.remove( goods );
+		int q = shoppingCart.remove( goods );
 		
 		//移除商品后调用计算购物车总金额、总价格方法
 		total();
@@ -72,10 +79,14 @@ public class Cart implements Serializable {
 		//先将总金额、总数量归零
 		this.totalPrice = 0;
 		this.totalQuantity = 0;
-		
-		
+
 		//遍历购物车 maps 重新计算购物车总价格、总数量
-		//代码省略....
+		Set<Goods> goodsSet = shoppingCart.keySet();
+		for (Goods goods : goodsSet) {
+			int count = shoppingCart.get(goods);
+			this.totalQuantity += count;                    //累加商品数量
+			this.totalPrice += goods.getPrice() * count;    //累加总价格
+		}
 	}
 
 	/**
