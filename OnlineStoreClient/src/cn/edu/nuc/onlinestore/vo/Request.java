@@ -1,5 +1,7 @@
 package cn.edu.nuc.onlinestore.vo;
 
+import java.io.Serializable;
+
 import cn.edu.nuc.onlinestore.model.Cart;
 
 /**
@@ -7,8 +9,13 @@ import cn.edu.nuc.onlinestore.model.Cart;
  * @author 王凯
  *
  */
-public class Request {
+public class Request implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7684290259100817956L;
+
 	/**
 	 * 登录消息
 	 */

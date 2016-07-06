@@ -6,12 +6,18 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+
 import java.awt.GridLayout;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class UserStore extends JFrame {
 
@@ -26,14 +32,26 @@ public class UserStore extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UserStore() {
-		setTitle("中北在线商场--当前用户:李四");
+	public UserStore(String username) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(UserStore.class.getResource("/img/user_login_logo.png")));
+		setTitle("中北在线商场--当前用户:" + username);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 732, 467);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		//设置窗体居中
+		setLocationRelativeTo(null);
+		
+		//设置界面风格为操作系统默认风格
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);  
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(10, 78, 696, 341);

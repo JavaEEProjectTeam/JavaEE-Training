@@ -7,6 +7,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class UserCartFrame extends JFrame {
 
@@ -29,8 +31,17 @@ public class UserCartFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		//设置窗体居中
+		setLocationRelativeTo(null);
 		
-		
+		//设置界面风格为操作系统默认风格
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);  
+
 		
 		DefaultTableModel model = new DefaultTableModel();
 		model.addColumn("商品编号");

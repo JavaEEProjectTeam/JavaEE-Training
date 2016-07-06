@@ -9,6 +9,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class UserGoods extends JFrame {
 
@@ -30,6 +32,17 @@ public class UserGoods extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		//设置窗体居中
+		setLocationRelativeTo(null);
+		
+		//设置界面风格为操作系统默认风格
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);  
 		
 		JLabel label = new JLabel("商品名称:");
 		label.setBounds(23, 57, 66, 15);

@@ -4,11 +4,19 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import cn.edu.nuc.onlinestore.network.TCPClient;
+
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class UserLogin extends JFrame {
 
@@ -16,47 +24,156 @@ public class UserLogin extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 3087959668950494137L;
+	
+	/**
+	 * 主面板
+	 */
 	private JPanel contentPane;
-	private JTextField textField;
-	private JPasswordField passwordField;
+	
+	/**
+	 * 用户名输入框
+	 */
+	private JTextField username;
+	
+	/**
+	 * 密码框
+	 */
+	private JPasswordField password;
+	
+	/**
+	 * 当前窗口
+	 */
+	private UserLogin thisFrame;
+	
+	/**
+	 * 客户端线程
+	 */
+	private TCPClient client;
 
 	/**
 	 * Create the frame.
 	 */
 	public UserLogin() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(UserLogin.class.getResource("/img/user_login_logo.png")));
+		
+		//设置图标
+		setIconImage(Toolkit.getDefaultToolkit().getImage(
+				UserLogin.class.getResource("/img/user_login_logo.png")));
+		
+		//设置标题
 		setTitle("中北线在商场-登录");
+		
+		//设置默认的关闭行为
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//设置窗口大小
 		setBounds(100, 100, 546, 445);
+		
+		//设置主面板
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel label = new JLabel("用户名:");
-		label.setBounds(129, 258, 54, 15);
-		contentPane.add(label);
+		//设置窗体居中
+		setLocationRelativeTo(null);
 		
-		JLabel label_1 = new JLabel("密  码:");
-		label_1.setBounds(129, 306, 54, 15);
-		contentPane.add(label_1);
+		//设置界面风格为操作系统默认风格
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);  
 		
-		textField = new JTextField();
-		textField.setBounds(214, 255, 197, 21);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		//用户名标签
+		JLabel username_label = new JLabel("用户名:");
+		username_label.setBounds(129, 258, 54, 15);
+		contentPane.add(username_label);
 		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(214, 303, 197, 21);
-		contentPane.add(passwordField);
+		//密码标签
+		JLabel password_label = new JLabel("密  码:");
+		password_label.setBounds(129, 306, 54, 15);
+		contentPane.add(password_label);
 		
-		JButton button = new JButton("登录系统");
-		button.setBounds(318, 346, 93, 23);
-		contentPane.add(button);
+		//用户名输入框
+		username = new JTextField();
+		username.setBounds(214, 255, 197, 21);
+		contentPane.add(username);
+		username.setColumns(10);
 		
-		JLabel label_2 = new JLabel("");
-		label_2.setIcon(new ImageIcon(UserLogin.class.getResource("/img/user.png")));
-		label_2.setBounds(134, 10, 255, 232);
-		contentPane.add(label_2);
+		//密码输入框
+		password = new JPasswordField();
+		password.setBounds(214, 303, 197, 21);
+		contentPane.add(password);
+		
+		//登录按钮
+		JButton loginButton = new JButton("登录");
+		loginButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String uname = username.getText();
+				String upass = new String(password.getPassword());
+				if (uname == null || upass == null 
+						|| uname.equals("") || upass.equals("")) {
+					JOptionPane.showMessageDialog(null, "用户名或密码不能为空！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				try {
+					client.userLogin(uname, upass);  //给服务器端发登录请求
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, "额，网络不通！",
+							"提示", JOptionPane.WARNING_MESSAGE);
+					e1.printStackTrace();
+				}
+			}
+		});
+		loginButton.setBounds(318, 346, 93, 23);
+		contentPane.add(loginButton);
+		
+		
+		//主面板中央的大图片
+		JLabel picture = new JLabel("");
+		picture.setIcon(new ImageIcon(UserLogin.class.getResource("/img/user.png")));
+		picture.setBounds(134, 10, 255, 232);
+		contentPane.add(picture);
+		
+		//注册按钮
+		JButton registerButton = new JButton("注册");
+		registerButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String uname = username.getText();
+				String upass = new String(password.getPassword());
+				if (uname == null || upass == null 
+						|| uname.equals("") || upass.equals("")) {
+					JOptionPane.showMessageDialog(null, "用户名或密码不能为空！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				try {
+					client.userRegister(uname, upass); //给服务器端发注册请求
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, "额，网络不通！",
+							"提示", JOptionPane.WARNING_MESSAGE);
+					e1.printStackTrace();
+				}
+			}
+		});
+		registerButton.setBounds(158, 346, 93, 23);
+		contentPane.add(registerButton);
+		
+		//启动客户端线程
+		thisFrame = this;
+		client = new TCPClient(thisFrame);
+		client.start();
+	}
+	
+	/**
+	 * 弹出对话框提示用户
+	 * @param message 消息
+	 */
+	public void callUser(String message) {
+		JOptionPane.showMessageDialog(null, message, "提示", JOptionPane.WARNING_MESSAGE);
 	}
 }
