@@ -18,6 +18,7 @@ import javax.swing.UIManager;
 
 import cn.edu.nuc.onlinestore.model.Goods;
 import cn.edu.nuc.onlinestore.network.TCPClient;
+import cn.edu.nuc.onlinestore.service.GoodsService;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -40,6 +41,7 @@ public class UserStore extends JFrame {
 	private JFrame thisFrame;
 	private TCPClient client;
 	private static JTable table;
+	private String username;
 
 	/**
 	 * 创建窗体
@@ -52,6 +54,8 @@ public class UserStore extends JFrame {
 		
 		//设置标题
 		setTitle("中北在线商场--当前用户:" + username);
+		
+		this.username = username;
 		
 		//设置默认的关闭行为
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -114,7 +118,7 @@ public class UserStore extends JFrame {
 		exitButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int select = JOptionPane.showConfirmDialog(null, "您要注销吗？", 
+				int select = JOptionPane.showConfirmDialog(null, "您要退出吗？", 
 						"提示", JOptionPane.YES_NO_OPTION);
 				if (select == 0) {  //用户选择了是
 					thisFrame.setVisible(false);
@@ -123,6 +127,7 @@ public class UserStore extends JFrame {
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
+					System.exit(0);
 				}
 			}
 		});
@@ -142,6 +147,18 @@ public class UserStore extends JFrame {
 		
 		//搜索按钮
 		JButton searchButtton = new JButton("搜索");
+		searchButtton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				GoodsService goodsService = new GoodsService(
+						UserStore.this.client.getClient());
+				try {
+					goodsService.searchGoods(goodsNameText.getText());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		searchButtton.setBounds(197, 45, 93, 23);
 		contentPane.add(searchButtton);
 		
@@ -179,6 +196,7 @@ public class UserStore extends JFrame {
 						e1.printStackTrace();
 					}
 				}
+				System.exit(0);
 			}
 		});
 	}
