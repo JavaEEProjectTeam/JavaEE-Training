@@ -13,10 +13,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import cn.edu.nuc.onlinestore.network.TCPClient;
+import cn.edu.nuc.onlinestore.service.LoginRegisterService;
 
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class UserLogin extends JFrame {
 
@@ -119,8 +122,9 @@ public class UserLogin extends JFrame {
 							"提示", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
+				LoginRegisterService lrs = new LoginRegisterService(client.getClient());
 				try {
-					client.userLogin(uname, upass);  //给服务器端发登录请求
+					lrs.userLogin(uname, upass);  //给服务器端发登录请求
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "额，网络不通！",
 							"提示", JOptionPane.WARNING_MESSAGE);
@@ -151,8 +155,9 @@ public class UserLogin extends JFrame {
 							"提示", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
+				LoginRegisterService lrs = new LoginRegisterService(client.getClient());
 				try {
-					client.userRegister(uname, upass); //给服务器端发注册请求
+					lrs.userRegister(uname, upass); //给服务器端发注册请求
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "额，网络不通！",
 							"提示", JOptionPane.WARNING_MESSAGE);
@@ -167,6 +172,23 @@ public class UserLogin extends JFrame {
 		thisFrame = this;
 		client = new TCPClient(thisFrame);
 		client.start();
+		
+		//在窗口关闭时通知服务器自己已经下线
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int select = JOptionPane.showConfirmDialog(null, "您要注销吗？", 
+						"提示", JOptionPane.YES_NO_OPTION);
+				if (select == 0) {  //用户选择了是
+					thisFrame.setVisible(false);
+					try {
+						UserLogin.this.client.stopClient();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 	
 	/**
