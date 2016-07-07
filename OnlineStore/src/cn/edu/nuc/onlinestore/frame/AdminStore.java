@@ -54,7 +54,7 @@ public class AdminStore extends JFrame {
 	/**
 	 * 商品列表
 	 */
-	private JTable table;
+	private static JTable table;
 	
 	/**
 	 * 商品列表内部的模型
@@ -300,4 +300,16 @@ public class AdminStore extends JFrame {
 		}
 	}
 
+	/**
+	 * 更新表格显示
+	 * @param goods 商品列表
+	 */
+	public static void updateTable(List<Goods> goods) {
+		if (AdminStore.table != null) {
+			updateGoodsList(goods, (DefaultTableModel)AdminStore.table.getModel());
+			AdminStore.table.updateUI();
+		}
+	}
+
+	
 }

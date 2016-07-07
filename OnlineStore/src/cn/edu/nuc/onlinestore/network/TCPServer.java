@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.JLabel;
 
+import cn.edu.nuc.onlinestore.frame.AdminStore;
 import cn.edu.nuc.onlinestore.io.IOUtility;
 import cn.edu.nuc.onlinestore.model.Cart;
 import cn.edu.nuc.onlinestore.model.Goods;
@@ -119,7 +120,7 @@ public class TCPServer extends Thread{
 					}
 				}
 			}
-			
+			AdminStore.updateTable(IOUtility.getAllGoods());
 			message.append("购买成功，您本次消费" + cart.getTotalPrice() + "元！祝您购物愉快！");
 		}
 
@@ -128,6 +129,7 @@ public class TCPServer extends Thread{
 		response.setMessageType(Response.PAY_MESSAGE);
 		response.setResult(flag);
 		response.setMessage(message.toString());
+		response.setObj(IOUtility.getAllGoods());
 		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 	}
 
