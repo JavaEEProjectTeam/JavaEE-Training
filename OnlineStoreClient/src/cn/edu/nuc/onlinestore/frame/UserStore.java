@@ -144,6 +144,7 @@ public class UserStore extends JFrame {
 		JButton viewGoodsInfo = new JButton("查看商品详细信息(或双单击商品列)");
 		viewGoodsInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//先检查是否选中列
 				int selectRow = table.getSelectedRow();
 				if (selectRow == -1) { //用户未做选择
 					JOptionPane.showMessageDialog(null, 
@@ -151,6 +152,8 @@ public class UserStore extends JFrame {
 							"提示", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
+				
+				//找出id对应的商品并更新显示
 				int num = Integer.parseInt(
 						table.getValueAt(table.getSelectedRow(),0).toString());
 				Goods goods = getGoodsById(UserStore.this.goodsList, num);
@@ -199,10 +202,11 @@ public class UserStore extends JFrame {
 		searchButtton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String text = goodsNameText.getText().trim();
 				GoodsService goodsService = new GoodsService(
 						UserStore.this.client.getClient());
 				try {
-					goodsService.searchGoods(goodsNameText.getText());
+					goodsService.searchGoods(text);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

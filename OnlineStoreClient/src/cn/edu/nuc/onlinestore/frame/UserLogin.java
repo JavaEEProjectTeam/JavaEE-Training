@@ -119,8 +119,8 @@ public class UserLogin extends JFrame {
 		loginButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String uname = username.getText();
-				String upass = new String(password.getPassword());
+				String uname = username.getText().trim();
+				String upass = (new String(password.getPassword())).trim();
 				if (uname == null || upass == null 
 						|| uname.equals("") || upass.equals("")) {
 					JOptionPane.showMessageDialog(null, "用户名或密码不能为空！", 

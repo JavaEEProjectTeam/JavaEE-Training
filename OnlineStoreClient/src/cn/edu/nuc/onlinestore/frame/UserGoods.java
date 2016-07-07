@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -14,6 +15,7 @@ import javax.swing.UIManager;
 
 import cn.edu.nuc.onlinestore.model.Cart;
 import cn.edu.nuc.onlinestore.model.Goods;
+import cn.edu.nuc.onlinestore.util.RegexUtility;
 
 import java.awt.Toolkit;
 import java.util.Map;
@@ -135,8 +137,16 @@ public class UserGoods extends JFrame {
 		addButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String text = UserGoods.this.quantity.getText();
+				
+				//做数值判断
+				if (!RegexUtility.isInteger(text)) {
+					JOptionPane.showMessageDialog(null, "库存量请输入整数值！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+				}
+				
 				Map<Goods, Integer> shoppingCart = UserGoods.this.cart.getShoppingCart();
-				int count = Integer.parseInt(UserGoods.this.quantity.getText());
+				int count = Integer.parseInt(text);
 				UserGoods.this.cart.add(UserGoods.this.goods, count);
 				UserGoods.this.label.setText("购物车: " + shoppingCart.size() + "件商品");
 				UserGoods.this.label.updateUI();
