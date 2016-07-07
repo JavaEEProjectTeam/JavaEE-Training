@@ -22,10 +22,15 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * 管理员修改商品窗口
+ * @author 王凯
+ *
+ */
 public class AdminUpdate extends JFrame {
 
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = -594504024620937054L;
 	
@@ -71,6 +76,8 @@ public class AdminUpdate extends JFrame {
 
 	/**
 	 * 创建窗体
+	 * @param goods 商品信息
+	 * @param table 表格
 	 */
 	public AdminUpdate(Goods goods, JTable table) {
 		//设置图标
@@ -169,13 +176,20 @@ public class AdminUpdate extends JFrame {
 		confirmButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				//修改实体类存储的信息
 				AdminUpdate.this.goods.setGid(AdminUpdate.this.goods.getGid());
 				AdminUpdate.this.goods.setGoodsName(goodsName.getText());
 				AdminUpdate.this.goods.setPrice(Float.parseFloat(unitPrice.getText()));
 				AdminUpdate.this.goods.setInventory(Integer.parseInt(count.getText()));
 				AdminUpdate.this.goods.setNote(AdminUpdate.this.note.getText());
+				
+				//同步修改到文件
 				IOUtility.writeGoodsToFile(AdminUpdate.this.goods);
+				
+				//隐藏当前窗体
 				thisFrame.setVisible(false);
+				
+				//更新上一界面显示
 				AdminStore.updateGoodsList(
 						IOUtility.getAllGoods(), 
 						(DefaultTableModel)AdminUpdate.this.table.getModel());

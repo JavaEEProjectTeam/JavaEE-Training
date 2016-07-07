@@ -10,6 +10,9 @@ import cn.edu.nuc.onlinestore.model.Admin;
  */
 public class AdminInitTools {
 	
+	/**
+	 * 管理员初始化
+	 */
 	public static void initAdmin() {
 		if (IOUtility.getRegisteredAdminCount() == 0) {
 			Admin zs = new Admin(IOUtility.getRegisteredAdminCount() + 1, "张三", "123");

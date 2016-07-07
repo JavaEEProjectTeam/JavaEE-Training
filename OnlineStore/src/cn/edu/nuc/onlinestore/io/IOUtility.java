@@ -72,6 +72,8 @@ public class IOUtility {
 	
 	/**
 	 * 判断文件或目录是否存在
+	 * @param path 文件路径
+	 * @return 判断结果，存在返回true，否则返回false
 	 */
 	private static boolean isFileExists(String path) {
 		File file = new File(path);
@@ -83,6 +85,8 @@ public class IOUtility {
 	
 	/**
 	 * 创建文件
+	 * @param path 路径
+	 * @return 创建结果
 	 */
 	private static boolean createFile(String path) {
 		if (!isFileExists(path)) {
@@ -115,7 +119,7 @@ public class IOUtility {
 	
 	/**
 	 * 获得下一个商品编号
-	 * @return
+	 * @return 商品编号
 	 */
 	public static int getNextGoodsId() {
 		String[] goodsFileNames = new File(GOODS_DIRECTORY).list();
@@ -133,7 +137,7 @@ public class IOUtility {
 	/**
 	 * 根据id获得商品信息
 	 * @param id 商品id
-	 * @return
+	 * @return 商品信息
 	 */
 	public static Goods getGoodsById(int id) {
 		List<Goods> list = getAllGoods();
@@ -146,8 +150,8 @@ public class IOUtility {
 	}
 	
 	/**
-	 * 按名称检索货物
-	 * @return
+	 * 按名称检索商品
+	 * @return 商品信息
 	 */
 	public static List<Goods> getGoodsByName(String goodsName) {
 		List<Goods> list = getAllGoods();
@@ -196,6 +200,7 @@ public class IOUtility {
 	
 	/**
 	 * 将管理员信息持久化到文件中
+	 * @param admin 管理员信息
 	 */
 	public static void writeAdminToFile(Admin admin) {
 		String path = ADMIN_DIRECTORY + admin.getAdminid() + ".dat";
@@ -211,7 +216,8 @@ public class IOUtility {
 	}
 	
 	/**
-	 * 将货物信息持久化到文件中
+	 * 将商品信息持久化到文件中
+	 * @param goods 商品信息
 	 */
 	public static void writeGoodsToFile(Goods goods) {
 		String path = GOODS_DIRECTORY + goods.getGid() + ".dat";
@@ -287,7 +293,7 @@ public class IOUtility {
 	}
 	
 	/**
-	 * 对象持久化
+	 * 对象持久化（关闭流）
 	 * @param object 要持久化的对象
 	 * @param out 输出流
 	 * @throws Exception 出现错误后抛出
@@ -330,7 +336,7 @@ public class IOUtility {
 	}
 	
 	/**
-	 * 从输入流中反序列化对象
+	 * 从输入流中反序列化对象（关闭流）
 	 * @param in
 	 * @return 对象
 	 */

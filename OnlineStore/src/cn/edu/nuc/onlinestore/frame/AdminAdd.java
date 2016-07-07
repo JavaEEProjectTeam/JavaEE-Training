@@ -30,10 +30,13 @@ import java.awt.event.MouseEvent;
 public class AdminAdd extends JFrame {
 
 	/**
-	 * 
+	 * 序列化Id
 	 */
 	private static final long serialVersionUID = -9082084528551688796L;
 	
+	/**
+	 * 当前窗口
+	 */
 	private JFrame thisFrame;
 	
 	/**
@@ -61,6 +64,9 @@ public class AdminAdd extends JFrame {
 	 */
 	private JTextArea note;
 	
+	/**
+	 * 表格
+	 */
 	private JTable table;
 
 	/**
@@ -174,7 +180,7 @@ public class AdminAdd extends JFrame {
 		confirmButton.setBounds(275, 310, 93, 23);
 		contentPane.add(confirmButton);
 		
-		//关闭窗口是时行为
+		//关闭窗口时的行为
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

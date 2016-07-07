@@ -10,19 +10,22 @@ import java.io.Serializable;
  */
 public class Goods implements Serializable {
 
+	/**
+	 * 序列化id
+	 */
 	private static final long serialVersionUID = 3565587646030892291L;
 
-	/*
+	/**
 	 * 商品编号
 	 */
 	private int gid;
 
-	/*
+	/**
 	 * 商品名称
 	 */
 	private String goodsName;
 
-	/*
+	/**
 	 * 商品单价
 	 */
 	private float price;

@@ -8,9 +8,13 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.swing.JLabel;
 
 import cn.edu.nuc.onlinestore.io.IOUtility;
+import cn.edu.nuc.onlinestore.model.Cart;
 import cn.edu.nuc.onlinestore.model.Goods;
 import cn.edu.nuc.onlinestore.model.User;
 import cn.edu.nuc.onlinestore.service.LoginRegisterService;
@@ -46,6 +50,7 @@ public class TCPServer extends Thread{
 	
 	/**
 	 * 初始化服务器
+	 * @param label 标签
 	 */
 	public TCPServer(JLabel label) {
 		try {
@@ -77,23 +82,62 @@ public class TCPServer extends Thread{
 	
 	/**
 	 * 用户结算购物车，执行支付操作
+	 * @param client 客户socket
+	 * @param request 客户端请求
 	 * @throws Exception 向客户端发送消息失败
 	 */
-	private void userPay(Socket client, Request clientMessage) throws Exception {
-		String message = "购买成功，您本次消费" 
-					+ clientMessage.getCart().getTotalPrice() + "元！祝您购物愉快！";
+	private void userPay(Socket client, Request request) throws Exception {
+		//检查库存量是否满足供给量
+		StringBuffer message = new StringBuffer();
+		boolean flag = true;
+		Cart cart = request.getCart();
+		Map<Goods, Integer> shoppingCart = cart.getShoppingCart();
+		Set<Goods> keyset = shoppingCart.keySet();
+		List<Goods> goodsList = IOUtility.getAllGoods();
+		for (Goods servergoods : goodsList) {
+			for (Goods usergoods : keyset) {
+				if (usergoods.getGid() == servergoods.getGid()) {
+					if (servergoods.getInventory() < shoppingCart.get(usergoods)) { //用库存量和购买量作比较
+						flag = false;
+						message.append("货品" + servergoods.getGoodsName() + "现在的库存为"
+								+ servergoods.getInventory() + ",数量不足！");
+					}
+				}
+			}
+		}
+		if (flag == false) { //库存不够，告知用户要求其减少数量
+			message.append("购买失败，请调整购物车的商品数量后再试！");
+		}
+		else { //库存没问题，可以出货
+			//减少库存
+			for (Goods servergoods : goodsList) {
+				for (Goods usergoods : keyset) {
+					if (usergoods.getGid() == servergoods.getGid()) {  //库存减去购买数量
+						servergoods.setInventory(
+								servergoods.getInventory() - shoppingCart.get(usergoods));
+						IOUtility.writeGoodsToFile(servergoods);  //将修改后的库存量同步到文件
+					}
+				}
+			}
+			
+			message.append("购买成功，您本次消费" + cart.getTotalPrice() + "元！祝您购物愉快！");
+		}
+
+		//向客户端发消息
 		Response response = new Response();
 		response.setMessageType(Response.PAY_MESSAGE);
-		response.setMessage(message);
+		response.setResult(flag);
+		response.setMessage(message.toString());
 		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 	}
 
 	/**
 	 * 用户下线
-	 * @param clientMessage 向客户端发送的消息
+	 * @param request 向客户端发送的消息
 	 * @throws Exception 向客户端发送消息的过程中出现异常
 	 */
-	private void userOffline(Socket client, Request clientMessage, JLabel label) throws Exception {
+	private void userOffline(Socket client, Request request, JLabel label) 
+			throws Exception {
 		onlineClient.remove(client);
 		Response response = new Response();
 		response.setMessageType(Response.OFFLINE_MESSAGE);
@@ -107,12 +151,12 @@ public class TCPServer extends Thread{
 	/**
 	 * 按名称检索商品
 	 * @param client 客户的Socket对象
-	 * @param clientMessage 从客户端发来的请求消息
+	 * @param request 从客户端发来的请求消息
 	 * @throws Exception 给客户端发送信息失败抛出异常
 	 */
-	private void searchGoodsByName(Socket client, Request clientMessage)
+	private void searchGoodsByName(Socket client, Request request)
 			throws IOException {
-		String goodsName = clientMessage.getGoodsname();
+		String goodsName = request.getGoodsname();
 		List<Goods> goodslist = IOUtility.getGoodsByName(goodsName);
 		Response response = new Response();
 		response.setResult(true);
@@ -124,28 +168,29 @@ public class TCPServer extends Thread{
 	/**
 	 * 用户注册
 	 * @param client 客户的Socket对象
-	 * @param clientMessage 从客户端发来的请求消息
+	 * @param request 从客户端发来的请求消息
 	 * @throws Exception 给客户端发送信息失败抛出异常
 	 */
-	private void userRegister(Socket client, Request clientMessage)
+	private void userRegister(Socket client, Request request)
 			throws Exception {
 		User user = new User();
 		user.setUserid(IOUtility.getRegisteredUserCount() + 1);
-		user.setUsername(clientMessage.getUsername());
-		user.setPassword(clientMessage.getPassword());
+		user.setUsername(request.getUsername());
+		user.setPassword(request.getPassword());
 		IOUtility.writeUserToFile(user);
 	}
 
 	/**
 	 * 用户登录
 	 * @param client 客户的Socket对象
-	 * @param clientMessage 从客户端发来的请求消息
+	 * @param request 从客户端发来的请求消息
+	 * @param label 标签
 	 * @throws Exception 给客户端发送信息失败抛出异常
 	 */
-	private void userLogin(Socket client, Request clientMessage, JLabel label)
+	private void userLogin(Socket client, Request request, JLabel label)
 			throws Exception{
 		boolean flag = LoginRegisterService.userLoginValidate(
-				clientMessage.getUsername(), clientMessage.getPassword());
+				request.getUsername(), request.getPassword());
 		Response response = new Response();
 		if (flag == true) { //验证通过
 			onlineClient.add(client); //加入在线用户列表
@@ -155,7 +200,7 @@ public class TCPServer extends Thread{
 		//设置对客户端的响应信息
 		response.setResult(flag);
 		response.setMessageType(Response.LOGIN_MESSAGE);
-		response.setMessage(clientMessage.getUsername());
+		response.setMessage(request.getUsername());
 		response.setObj(IOUtility.getAllGoods());  //向客户发送所有商品信息
 		IOUtility.persistObjectNoClose(response, client.getOutputStream());
 	}
@@ -194,26 +239,26 @@ public class TCPServer extends Thread{
 			flag = true;
 			try {
 				while (flag) {	
-					Request clientMessage = (Request)IOUtility.getObjectNoClose(in);
-					if (clientMessage == null) {
+					Request request = (Request)IOUtility.getObjectNoClose(in);
+					if (request == null) {
 						continue;
 					}
-					switch (clientMessage.getType()) {
+					switch (request.getType()) {
 						case Request.LOGIN_MESSAGE:   //登录操作
-							userLogin(client, clientMessage, onlineCountLabel);
+							userLogin(client, request, onlineCountLabel);
 							break;
 						case Request.REGISTER_MESSAGE://注册操作
-							userRegister(client, clientMessage);
+							userRegister(client, request);
 							break;
 						case Request.OFFLINE_MESSAGE: //离线操作
-							userOffline(client, clientMessage, onlineCountLabel);
+							userOffline(client, request, onlineCountLabel);
 							flag = false;
 							break;
 						case Request.SEARCH_MESSAGE:  //检索操作
-							searchGoodsByName(client, clientMessage);
+							searchGoodsByName(client, request);
 							break;
 						case Request.PAY_MESSAGE:     //结账操作
-							userPay(client, clientMessage);
+							userPay(client, request);
 							break;
 					}
 				

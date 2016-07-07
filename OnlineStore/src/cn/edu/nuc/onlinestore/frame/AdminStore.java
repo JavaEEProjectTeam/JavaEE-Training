@@ -36,7 +36,7 @@ import java.util.List;
 public class AdminStore extends JFrame {
 
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = -6143120919875553327L;
 	
@@ -65,6 +65,10 @@ public class AdminStore extends JFrame {
 	 */
 	private TCPServer server;
 	
+	/**
+	 * 创建窗体
+	 * @param adminname 管理员名
+	 */
 	public AdminStore(String adminname) {
 		
 		//设置图标
@@ -215,12 +219,15 @@ public class AdminStore extends JFrame {
 		searchButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				//空值判断
 				if (goodsid.getText() == null || goodsid.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "您没有输入任何内容，默认显示全部商品信息！");
 					updateGoodsList(IOUtility.getAllGoods(), model);
 					table.updateUI();
 					return;
 				}
+				
+				//检索商品
 				int id = Integer.parseInt(goodsid.getText());
 				Goods goods = IOUtility.getGoodsById(id);
 				if (goods == null) {
@@ -231,6 +238,8 @@ public class AdminStore extends JFrame {
 				}
 				List<Goods> gList = new ArrayList<Goods>();
 				gList.add(goods);
+				
+				//刷新界面显示
 				updateGoodsList(gList, model);
 				table.updateUI();
 			}
@@ -255,7 +264,7 @@ public class AdminStore extends JFrame {
 	
 	/**
 	 * 移除表中的所有行
-	 * @param model
+	 * @param model 表格中的内容
 	 */
 	public static void removeAllRows(DefaultTableModel model) {
 		while(model.getRowCount()>0){
@@ -264,9 +273,9 @@ public class AdminStore extends JFrame {
 	}
 
 	/**
-	 * 把货物添加到列表中
+	 * 把货物添加到表格中
 	 * @param goods 商品
-	 * @param model 表格
+	 * @param model 表格内容
 	 */
 	private static void addGoodsToRows(List<Goods> goods, DefaultTableModel model) {
 		for (Goods g : goods) {

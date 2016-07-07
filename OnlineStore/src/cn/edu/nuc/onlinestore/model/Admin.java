@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class Admin implements Serializable{
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = -5461656029989540791L;
 
