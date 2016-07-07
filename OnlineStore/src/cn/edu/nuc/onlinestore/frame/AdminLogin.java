@@ -113,8 +113,8 @@ public class AdminLogin extends JFrame {
 		loginButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String adminname = adminName.getText();
-				String adpassword = new String(password.getPassword());
+				String adminname = adminName.getText().trim();
+				String adpassword = (new String(password.getPassword())).trim();
 				if (adminname.equals("") || adpassword.equals("")) {
 					JOptionPane.showMessageDialog(null, "用户名、密码不能为空",
 							"警告", JOptionPane.WARNING_MESSAGE);

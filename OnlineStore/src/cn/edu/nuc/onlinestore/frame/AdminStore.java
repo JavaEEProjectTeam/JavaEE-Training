@@ -19,6 +19,7 @@ import javax.swing.UIManager;
 import cn.edu.nuc.onlinestore.io.IOUtility;
 import cn.edu.nuc.onlinestore.model.Goods;
 import cn.edu.nuc.onlinestore.network.TCPServer;
+import cn.edu.nuc.onlinestore.util.RegexUtility;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -219,16 +220,24 @@ public class AdminStore extends JFrame {
 		searchButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String text = goodsid.getText().trim();
+				
 				//空值判断
-				if (goodsid.getText() == null || goodsid.getText().equals("")) {
+				if (text == null || text.equals("")) {
 					JOptionPane.showMessageDialog(null, "您没有输入任何内容，默认显示全部商品信息！");
 					updateGoodsList(IOUtility.getAllGoods(), model);
 					table.updateUI();
 					return;
 				}
 				
+				//判断是否为数字
+				if (RegexUtility.isInteger(text)) {
+					JOptionPane.showMessageDialog(null, "您的输入不合法，请输入正整数！");
+					return;
+				}
+				
 				//检索商品
-				int id = Integer.parseInt(goodsid.getText());
+				int id = Integer.parseInt(text);
 				Goods goods = IOUtility.getGoodsById(id);
 				if (goods == null) {
 					JOptionPane.showMessageDialog(null, "没有找到编号为" + id + "的商品！");

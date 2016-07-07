@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
@@ -17,6 +18,7 @@ import javax.swing.UIManager;
 
 import cn.edu.nuc.onlinestore.io.IOUtility;
 import cn.edu.nuc.onlinestore.model.Goods;
+import cn.edu.nuc.onlinestore.util.RegexUtility;
 
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
@@ -163,6 +165,31 @@ public class AdminAdd extends JFrame {
 		confirmButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String goodsname = goodsName.getText().trim();
+				String unitprice = unitPrice.getText().trim();
+				String goodscount = count.getText().trim();
+				
+				//空值判断
+				if (!checkNull(goodsname) || !checkNull(unitprice) || !checkNull(goodscount)) {
+					JOptionPane.showMessageDialog(null, "商品名称、商品单价、库存是必填项！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				//数值判断
+				if (!RegexUtility.isNumber(unitprice)) {
+					JOptionPane.showMessageDialog(null, "商品单价只能填写数字（可以写小数）！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				if (!RegexUtility.isInteger(goodscount)) {
+					JOptionPane.showMessageDialog(null, "商品库存只能填写整数！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				//全部通过，开始执行业务逻辑
 				Goods newgoods = new Goods();
 				newgoods.setGid(IOUtility.getNextGoodsId());
 				newgoods.setGoodsName(goodsName.getText());
@@ -187,5 +214,17 @@ public class AdminAdd extends JFrame {
 				((AdminAdd)e.getSource()).setVisible(false);
 			}
 		});
+	}
+	
+	/**
+	 * 空值检验
+	 * @param string 待检验字符串
+	 * @return 检验结果
+	 */
+	private static boolean checkNull(String string) {
+		if (string == null || "".equals(string)) {
+			return false;
+		}
+		return true;
 	}
 }
