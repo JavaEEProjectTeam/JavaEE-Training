@@ -12,7 +12,7 @@ import cn.edu.nuc.onlinestore.model.Cart;
 public class Request implements Serializable{
 	
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = -7684290259100817956L;
 
@@ -47,12 +47,24 @@ public class Request implements Serializable{
 	 */
 	private int type;
 	
+	/**
+	 * 用户名
+	 */
 	private String username;
 	
+	/**
+	 * 密码
+	 */
 	private String password;
 	
+	/**
+	 * 商品名称
+	 */
 	private String goodsname;
 	
+	/**
+	 * 购物车
+	 */
 	private Cart cart;
 
 	public int getType() {

@@ -18,7 +18,6 @@ public class IOUtility {
 	 * 对象持久化
 	 * @param object 要持久化的对象
 	 * @param out 输出流
-	 * @throws Exception 出现错误后抛出
 	 */
 	public static void persistObject(Object object, OutputStream out){
 		if (object == null) {
@@ -42,7 +41,6 @@ public class IOUtility {
 	 * 对象持久化不关闭流
 	 * @param object 要持久化的对象
 	 * @param out 输出流
-	 * @throws Exception 出现错误后抛出
 	 */
 	public static void persistObjectNoClose(Object object, OutputStream out){
 		if (object == null) {
@@ -81,7 +79,6 @@ public class IOUtility {
 	 * 从输入流中反序列化对象不关闭流
 	 * @param in
 	 * @return 对象
-	 * @throws Exception 
 	 */
 	public static Object getObjectNoClose(InputStream in) {
 		if (in == null) {

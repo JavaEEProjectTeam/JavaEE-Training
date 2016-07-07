@@ -41,7 +41,8 @@ public class LoginRegisterService {
 	
 	/**
 	 * 管理员登录
-	 * @param 
+	 * @param aname 用户名
+	 * @param apass 密码
 	 * @return 登录验证结果
 	 */
 	public static boolean adminLoginValidate(String aname, String apass) {

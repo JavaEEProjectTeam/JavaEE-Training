@@ -25,12 +25,20 @@ public class TCPClient extends Thread{
 	 */
 	private Socket client;
 	
+	/**
+	 * 旗标，用于控制客户端网络进程的关停
+	 */
 	private volatile boolean flag;
 	
 	/**
 	 * 登录界面
 	 */
 	private UserLogin loginframe;
+	
+	/**
+	 * 用户主界面
+	 */
+	private UserStore userStore;
 	
 	public TCPClient(UserLogin loginframe) {
 		this.loginframe = loginframe;
@@ -46,16 +54,18 @@ public class TCPClient extends Thread{
 	public void run() {
 		try {
 			flag = true;
-			while (flag) {
+			while (flag) {  //不停地从服务器读取数据
 				Response response = (Response)IOUtility.getObjectNoClose(client.getInputStream());
 				if (response == null) {
 					continue;
 				}
+				
+				//根据响应的性质执行相关操作
 				switch (response.getMessageType()) {
 					case Response.LOGIN_MESSAGE:   //登录操作
 						if (response.getResult() == true) { //服务器验证通过
 							List<Goods> goodsList = (List<Goods>)response.getObj();
-							UserStore userStore = new UserStore(this, response.getMessage(),goodsList);
+							userStore = new UserStore(this, response.getMessage(),goodsList);
 							userStore.setVisible(true);
 							loginframe.setVisible(false);
 							break;
@@ -72,7 +82,10 @@ public class TCPClient extends Thread{
 						UserStore.updateGoodsList(goodsList);  //通知相关窗口更新信息显示
 						break;
 					case Response.PAY_MESSAGE:     //结账操作
-						
+						if (response.getResult() == true) {
+							userStore.cleanCart();  //清空购物车
+						}
+						UserStore.callUser(response.getMessage());
 						break;
 					default:
 						break;
@@ -95,22 +108,20 @@ public class TCPClient extends Thread{
 	
 	/**
 	 * 外部获取客户端Socket，方便进行写操作
-	 * @return
+	 * @return 客户端socket对象
 	 */
 	public Socket getClient() {
 		return client;
 	}
 
 	/**
-	 * 停掉服务器
-	 * @throws Exception 
+	 * 停掉网络进程
+	 * @throws Exception 停止进程时出现异常 
 	 */
 	public void stopClient() throws Exception {
-		System.out.println("执行退出操作：");
 		Request request = new Request();
 		request.setType(Request.OFFLINE_MESSAGE);
 		IOUtility.persistObjectNoClose(request, TCPClient.this.client.getOutputStream());
 		flag = false;
-		System.out.println("执行完毕！");
 	}
 }

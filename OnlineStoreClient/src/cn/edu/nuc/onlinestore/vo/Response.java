@@ -12,9 +12,10 @@ import java.io.Serializable;
 public class Response implements Serializable {
 
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = -1301418053396888480L;
+	
 	/**
 	 * 登录消息
 	 */

@@ -21,10 +21,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * 用户登录窗体
+ * @author 王凯
+ *
+ */
 public class UserLogin extends JFrame {
 
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = 3087959668950494137L;
 	

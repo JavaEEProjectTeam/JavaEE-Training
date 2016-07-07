@@ -11,14 +11,23 @@ import java.io.Serializable;
 public class User implements Serializable{
 
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = 5369120269129538610L;
 
+	/**
+	 * 用户id
+	 */
 	private int userid;
 
+	/**
+	 * 用户名
+	 */
 	private String username;
 
+	/**
+	 * 密码
+	 */
 	private String password;
 
 	public int getUserid() {

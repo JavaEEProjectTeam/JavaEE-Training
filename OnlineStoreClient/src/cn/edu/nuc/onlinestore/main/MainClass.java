@@ -4,6 +4,11 @@ import java.awt.EventQueue;
 
 import cn.edu.nuc.onlinestore.frame.UserLogin;
 
+/**
+ * 客户端主类
+ * @author 王凯
+ *
+ */
 public class MainClass {
 
 	public static void main(String[] args) {

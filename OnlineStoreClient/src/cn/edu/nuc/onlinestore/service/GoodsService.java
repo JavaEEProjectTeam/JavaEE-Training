@@ -3,6 +3,7 @@ package cn.edu.nuc.onlinestore.service;
 import java.net.Socket;
 
 import cn.edu.nuc.onlinestore.io.IOUtility;
+import cn.edu.nuc.onlinestore.model.Cart;
 import cn.edu.nuc.onlinestore.vo.Request;
 
 /**
@@ -33,5 +34,16 @@ public class GoodsService {
 		IOUtility.persistObjectNoClose(request, client.getOutputStream());
 	}
 	
+	/**
+	 * 发送购物车信息到服务器
+	 * @param cart  购物车
+	 * @throws Exception 向服务器端发送消息失败
+	 */
+	public void sendPayRequest(Cart cart) throws Exception {
+		Request request = new Request();
+		request.setType(Request.PAY_MESSAGE);
+		request.setCart(cart);
+		IOUtility.persistObjectNoClose(request, client.getOutputStream());
+	}
 	
 }

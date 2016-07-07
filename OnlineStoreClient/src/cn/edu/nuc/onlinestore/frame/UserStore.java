@@ -30,24 +30,63 @@ import java.util.List;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * 用户登陆后的商店主界面
+ * @author 王凯
+ *
+ */
 public class UserStore extends JFrame {
 
 	/**
-	 * 
+	 * 序列化id
 	 */
 	private static final long serialVersionUID = 9145645020798165316L;
+	
+	/**
+	 * 主面板
+	 */
 	private JPanel contentPane;
+	
+	/**
+	 * 输入商品名称的文本框
+	 */
 	private JTextField goodsNameText;
+	
+	/**
+	 * 商品列表
+	 */
 	private List<Goods> goodsList;
+	
+	/**
+	 * 当前窗体
+	 */
 	private JFrame thisFrame;
+	
+	/**
+	 * 客户端线程
+	 */
 	private TCPClient client;
+	
+	/**
+	 * 表格
+	 */
 	private static JTable table;
+	
+	/**
+	 * 购物车
+	 */
 	private Cart cart = new Cart();
+	
+	/**
+	 * 购物车标签
+	 */
+	private JLabel shoppingcart_label;
 
 	/**
 	 * 创建窗体
 	 */
-	public UserStore(TCPClient client, String username, List<Goods> goodsList) {
+	public UserStore(TCPClient client, String username
+			, List<Goods> goodsList) {
 		
 		//设置图标
 		setIconImage(Toolkit.getDefaultToolkit().getImage(
@@ -77,6 +116,7 @@ public class UserStore extends JFrame {
 		}
 		SwingUtilities.updateComponentTreeUI(this);  
 		
+		//保存当前窗体
 		thisFrame = this;
 		
 		//创建并设置主面板
@@ -104,7 +144,17 @@ public class UserStore extends JFrame {
 		JButton viewGoodsInfo = new JButton("查看商品详细信息(或双单击商品列)");
 		viewGoodsInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				UserGoods d = new UserGoods();
+				int selectRow = table.getSelectedRow();
+				if (selectRow == -1) { //用户未做选择
+					JOptionPane.showMessageDialog(null, 
+							"您没有选择商品，请您选中某个商品后再单击此按钮！", 
+							"提示", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int num = Integer.parseInt(
+						table.getValueAt(table.getSelectedRow(),0).toString());
+				Goods goods = getGoodsById(UserStore.this.goodsList, num);
+				UserGoods d = new UserGoods(goods, cart, shoppingcart_label);
 				d.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 				d.setVisible(true);
 			}
@@ -162,7 +212,9 @@ public class UserStore extends JFrame {
 		contentPane.add(searchButtton);
 		
 		//购物车信息标签
-		JLabel shoppingcart_label = new JLabel("购物车: 8 件商品");
+		this.shoppingcart_label = shoppingcart_label;
+		shoppingcart_label = new JLabel("购物车: " 
+					+ cart.getShoppingCart().size() + "件商品");
 		shoppingcart_label.setBounds(10, 10, 124, 15);
 		contentPane.add(shoppingcart_label);
 		
@@ -170,7 +222,8 @@ public class UserStore extends JFrame {
 		JButton viewShoppingCartButton = new JButton("查看购物车");
 		viewShoppingCartButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				UserCartFrame cf = new UserCartFrame();
+				UserCartFrame cf = new UserCartFrame(
+						cart, UserStore.this.client);
 				cf.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 				cf.setVisible(true);
 			}
@@ -185,8 +238,8 @@ public class UserStore extends JFrame {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				int select = JOptionPane.showConfirmDialog(null, "您要退出吗？", 
-						"提示", JOptionPane.YES_NO_OPTION);
+				int select = JOptionPane.showConfirmDialog(null, 
+						"您要退出吗？", "提示", JOptionPane.YES_NO_OPTION);
 				if (select == 0) {  //用户选择了是
 					thisFrame.setVisible(false);
 					try {
@@ -200,7 +253,20 @@ public class UserStore extends JFrame {
 		});
 	}
 	
-	
+	/**
+	 * 按照商品id从商品列表中取出商品信息
+	 * @param goodsList 商品列表
+	 * @param gid 商品id
+	 * @return 商品信息
+	 */
+	private Goods getGoodsById(List<Goods> goodsList, int gid) {
+		for (Goods goods : goodsList) {
+			if (goods.getGid() == gid) {
+				return goods;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * 更新货物列表
@@ -216,11 +282,11 @@ public class UserStore extends JFrame {
 	
 	/**
 	 * 移除表中的所有行
-	 * @param model
+	 * @param model 表格内容
 	 */
 	public static void removeAllRows(DefaultTableModel model) {
-		while(model.getRowCount()>0){
-			model.removeRow(model.getRowCount()-1);
+		while(model.getRowCount() > 0){
+			model.removeRow(model.getRowCount() - 1);
 		}
 	}
 
@@ -229,7 +295,8 @@ public class UserStore extends JFrame {
 	 * @param goods 商品
 	 * @param model 表格
 	 */
-	private static void addGoodsToRows(List<Goods> goods, DefaultTableModel model) {
+	private static void addGoodsToRows(List<Goods> goods, 
+			DefaultTableModel model) {
 		for (Goods g : goods) {
 			model.addRow(
 				new String[]{
@@ -241,5 +308,24 @@ public class UserStore extends JFrame {
 				}
 			);
 		}
+	}
+	
+	/**
+	 * 弹出对话框提示用户
+	 * @param message 消息
+	 */
+	public static void callUser(String message) {
+		JOptionPane.showMessageDialog(null, message, "提示"
+				, JOptionPane.WARNING_MESSAGE);
+	}
+
+	/**
+	 * 清空购物车并刷新显示
+	 */
+	public void cleanCart() {
+		cart.getShoppingCart().clear();
+		shoppingcart_label.setText("购物车: " 
+				+ cart.getShoppingCart().size() + "件商品");
+		shoppingcart_label.updateUI();
 	}
 }
