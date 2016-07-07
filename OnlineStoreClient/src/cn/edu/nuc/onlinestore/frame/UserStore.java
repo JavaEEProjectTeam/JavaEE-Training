@@ -70,7 +70,7 @@ public class UserStore extends JFrame {
 	/**
 	 * 表格
 	 */
-	private static JTable table;
+	private JTable table;
 	
 	/**
 	 * 购物车
@@ -277,8 +277,8 @@ public class UserStore extends JFrame {
 	 * @param goods 货物列表
 	 * @param model 表格
 	 */
-	public static void updateGoodsList(List<Goods> goods) {
-		DefaultTableModel model = (DefaultTableModel)table.getModel();
+	public void updateGoodsList(List<Goods> goods) {
+		DefaultTableModel model = (DefaultTableModel)UserStore.this.table.getModel();
 		removeAllRows(model);  //清空列表
 		addGoodsToRows(goods, model);
 		table.updateUI();
@@ -288,7 +288,7 @@ public class UserStore extends JFrame {
 	 * 移除表中的所有行
 	 * @param model 表格内容
 	 */
-	public static void removeAllRows(DefaultTableModel model) {
+	public void removeAllRows(DefaultTableModel model) {
 		while(model.getRowCount() > 0){
 			model.removeRow(model.getRowCount() - 1);
 		}
@@ -299,7 +299,7 @@ public class UserStore extends JFrame {
 	 * @param goods 商品
 	 * @param model 表格
 	 */
-	private static void addGoodsToRows(List<Goods> goods, 
+	private void addGoodsToRows(List<Goods> goods, 
 			DefaultTableModel model) {
 		for (Goods g : goods) {
 			model.addRow(

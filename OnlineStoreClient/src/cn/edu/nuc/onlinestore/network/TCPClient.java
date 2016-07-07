@@ -79,12 +79,14 @@ public class TCPClient extends Thread{
 						break;
 					case Response.SEARCH_MESSAGE:  //检索操作
 						List<Goods> goodsList = (List<Goods>)response.getObj();  //得到结果
-						UserStore.updateGoodsList(goodsList);  //通知相关窗口更新信息显示
+						userStore.updateGoodsList(goodsList);  //通知相关窗口更新信息显示
 						break;
 					case Response.PAY_MESSAGE:     //结账操作
 						if (response.getResult() == true) {
 							userStore.cleanCart();  //清空购物车
 						}
+						List<Goods> newList = (List<Goods>)response.getObj();
+						userStore.updateGoodsList(newList);
 						UserStore.callUser(response.getMessage());
 						break;
 					default:
